@@ -1,0 +1,8 @@
+{
+  "name": "RevoltEditorBridge",
+  "version": "0.17.0",
+  "phase": 17,
+  "phaseName": "Packaging, Offline Installer, and Documentation",
+  "unrealEngine": "5.7",
+  "offlineFirst": true
+}

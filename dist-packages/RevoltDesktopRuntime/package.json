@@ -1,0 +1,22 @@
+{
+  "name": "revolt-desktop-runtime",
+  "version": "0.7.0",
+  "private": true,
+  "description": "Offline desktop runtime shell for Revolt Editor Bridge.",
+  "main": "dist/main/main.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-assets.mjs",
+    "dev": "npm run build && electron dist/main/main.js",
+    "start": "electron dist/main/main.js",
+    "package": "powershell -NoProfile -ExecutionPolicy Bypass -File ../scripts/package/Package-Desktop.ps1"
+  },
+  "dependencies": {
+    "sql.js": "^1.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "electron": "^35.0.0",
+    "typescript": "^5.9.3"
+  }
+}

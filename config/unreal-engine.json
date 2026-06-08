@@ -1,0 +1,4 @@
+{
+	"EngineRoot": "E:\\UE5\\UE_5.7",
+	"Notes": "Change EngineRoot if Unreal Engine is installed somewhere else. Build scripts also honor UE_ENGINE_DIR."
+}

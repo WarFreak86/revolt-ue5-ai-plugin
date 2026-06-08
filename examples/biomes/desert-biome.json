@@ -1,0 +1,35 @@
+{
+  "biome_name": "DesertBiome",
+  "seed": 8842,
+  "terrain": {
+    "terrain_resolution": 1024,
+    "min_height": 0,
+    "max_height": 420,
+    "min_slope": 0,
+    "max_slope": 22,
+    "noise_scale": 0.45
+  },
+  "foliage_rules": [
+    {
+      "rule_name": "SparseCactus",
+      "mesh": "/Game/RevoltGenerated/Placeholder/SM_Cactus",
+      "density": 0.12,
+      "min_scale": 0.7,
+      "max_scale": 1.3,
+      "min_slope": 0,
+      "max_slope": 12,
+      "min_height": 0,
+      "max_height": 380
+    }
+  ],
+  "structure_rules": [],
+  "objective_rules": [],
+  "navigation": {
+    "allow_navmesh": true,
+    "preferred_path_width": 500
+  },
+  "lighting": {
+    "time_of_day": 16,
+    "weather": "Clear"
+  }
+}

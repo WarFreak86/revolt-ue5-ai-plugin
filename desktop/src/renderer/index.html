@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Revolt Desktop Runtime</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="notification-stack" class="notification-stack" aria-live="polite"></div>
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">R</span>
+        <div>
+          <h1>Revolt Runtime</h1>
+          <p>Offline desktop shell</p>
+        </div>
+      </div>
+      <nav>
+        <button class="nav active" data-page="beginner-home" data-mode-scope="beginner">Beginner Dashboard</button>
+        <button class="nav" data-page="connect-unreal">Connect to Unreal</button>
+        <button class="nav" data-page="playable-workflow" data-mode-scope="beginner">Make Playable</button>
+        <button class="nav" data-page="prototype-wizard" data-mode-scope="beginner">Prototype Wizard</button>
+        <button class="nav" data-page="recipes" data-mode-scope="beginner">Recipes</button>
+        <button class="nav" data-page="dashboard">Dashboard</button>
+        <button class="nav" data-page="unreal" data-mode-scope="advanced">Unreal Connection</button>
+        <button class="nav" data-page="manual" data-mode-scope="advanced">Manual Command Mode</button>
+        <button class="nav" data-page="mcp" data-mode-scope="advanced">MCP Server</button>
+        <button class="nav" data-page="history" data-mode-scope="advanced">Command History</button>
+        <button class="nav" data-page="approvals" data-mode-scope="advanced">Approval Queue</button>
+        <button class="nav" data-page="model-setup">Local Model Setup</button>
+        <button class="nav" data-page="models" data-mode-scope="advanced">Model Profiles</button>
+        <button class="nav" data-page="indexing" data-mode-scope="advanced">Project Index</button>
+        <button class="nav" data-page="settings">Settings</button>
+        <button class="nav" data-page="offline">Offline Mode</button>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="mode-banner">
+        <div>
+          <strong id="mode-label">Beginner Mode</strong>
+          <p>Beginner Mode shows guided workflows and hides risky technical tools. Advanced Mode exposes the full command and debugging interface.</p>
+        </div>
+        <label>
+          Experience Mode
+          <select id="experienceModeHeader">
+            <option value="beginner">Beginner Mode</option>
+            <option value="advanced">Advanced Mode</option>
+          </select>
+        </label>
+      </div>
+
+      <section id="beginner-home" class="page active">
+        <header>
+          <p class="eyebrow">Beginner Mode</p>
+          <h2>Beginner Dashboard</h2>
+          <p class="lede">This tool works offline. A local model is optional. Manual workflows are always available.</p>
+        </header>
+        <div class="beginner-status-grid">
+          <article class="card" id="beginner-project-status"></article>
+          <article class="card" id="beginner-unreal-status"></article>
+          <article class="card" id="beginner-model-status"></article>
+          <article class="card" id="beginner-manual-status"></article>
+          <article class="card">
+            <span class="status-dot unknown"></span>
+            <h3>Project Health</h3>
+            <p id="beginner-health-summary">Not checked yet. Run “Check my game for problems” when Unreal is connected.</p>
+          </article>
+          <article class="card">
+            <span class="status-dot warning"></span>
+            <h3>Next Recommended Action</h3>
+            <p id="beginner-next-action">Connect Unreal, then make the current level playable.</p>
+          </article>
+        </div>
+        <div class="beginner-grid">
+          <article class="beginner-action-card">
+            <strong>Make this level playable</strong>
+            <span>Check the open level and plan safe fixes for basic playtesting.</span>
+            <small>Difficulty: Easy · Estimated result: a level-readiness checklist</small>
+            <button data-beginner-action="make_playable">Start</button>
+          </article>
+          <article class="beginner-action-card">
+            <strong>Create a new game prototype</strong>
+            <span>Use generated starter templates to create a small playable idea.</span>
+            <small>Difficulty: Medium · Estimated result: generated template plan</small>
+            <button data-beginner-action="new_prototype">Start</button>
+          </article>
+          <article class="beginner-action-card">
+            <strong>Add enemies</strong>
+            <span>Prepare generated enemy data and wave-spawner steps.</span>
+            <small>Difficulty: Medium · Estimated result: enemy setup guidance</small>
+            <button data-beginner-action="add_enemies">Start</button>
+          </article>
+          <article class="beginner-action-card">
+            <strong>Add a weapon</strong>
+            <span>Create or tune generated weapon data without touching user assets.</span>
+            <small>Difficulty: Medium · Estimated result: weapon data plan</small>
+            <button data-beginner-action="add_weapon">Start</button>
+          </article>
+          <article class="beginner-action-card">
+            <strong>Add health pickups</strong>
+            <span>Plan generated health pickups for a simple game loop.</span>
+            <small>Difficulty: Easy · Estimated result: pickup placement plan</small>
+            <button data-beginner-action="add_pickups">Start</button>
+          </article>
+          <article class="beginner-action-card">
+            <strong>Create a main menu</strong>
+            <span>Outline a simple generated menu workflow for later Blueprint work.</span>
+            <small>Difficulty: Advanced · Estimated result: menu creation checklist</small>
+            <button data-beginner-action="create_menu">Start</button>
+          </article>
+          <article class="beginner-action-card">
+            <strong>Create a biome/world</strong>
+            <span>Use generated biome JSON and dry-run world content first.</span>
+            <small>Difficulty: Medium · Estimated result: biome/world plan</small>
+            <button data-beginner-action="create_biome">Start</button>
+          </article>
+          <article class="beginner-action-card">
+            <strong>Check my game for problems</strong>
+            <span>Run read-only audits and get a suggested fix plan.</span>
+            <small>Difficulty: Easy · Estimated result: project health report</small>
+            <button data-beginner-action="audit_game">Start</button>
+          </article>
+          <article class="beginner-action-card">
+            <strong>Open tutorials</strong>
+            <span>Open local guidance for safe workflows and setup.</span>
+            <small>Difficulty: Easy · Estimated result: tutorial next steps</small>
+            <button data-beginner-action="open_tutorials">Open</button>
+          </article>
+        </div>
+        <div class="panel">
+          <h3>Guided Result</h3>
+          <button id="beginner-connect-unreal" class="primary">Connect to Unreal</button>
+          <p id="beginner-action-result" class="message">Pick an action above. Nothing runs automatically from this dashboard.</p>
+        </div>
+      </section>
+
+      <section id="connect-unreal" class="page">
+        <header>
+          <p class="eyebrow">Beginner setup</p>
+          <h2>Connect to Unreal</h2>
+          <p class="lede">Follow these steps from opening Unreal to getting connected. No AI model or MCP server is required.</p>
+        </header>
+        <div class="connection-layout">
+          <div class="panel">
+            <h3 id="connection-step-title">Step 1: Open your Unreal project</h3>
+            <p id="connection-step-body" class="message">Open the Unreal Engine project you want this tool to control. Keep Unreal open while using the desktop app.</p>
+            <div id="connection-step-extra" class="connection-help" hidden></div>
+            <div id="connection-step-buttons" class="button-row"></div>
+            <p id="connection-result-message" class="message">Start with Step 1. This setup stays on your computer.</p>
+          </div>
+          <div class="panel">
+            <h3>Connection Status</h3>
+            <div id="connection-status-card" class="card"></div>
+            <details>
+              <summary>Advanced connection settings</summary>
+              <div class="settings-grid connection-settings">
+                <label>Host <input id="connectionHost" value="127.0.0.1" /></label>
+                <label>Port <input id="connectionPort" type="number" min="1" max="65535" value="8765" /></label>
+                <label>Full endpoint URL <input id="connectionEndpoint" value="http://127.0.0.1:8765" /></label>
+                <label>Timeout <input id="connectionTimeoutMs" type="number" min="1000" value="5000" /></label>
+              </div>
+              <div class="button-row">
+                <button id="connection-reset-default">Reset to Default</button>
+                <button id="connection-save-settings">Save Connection Settings</button>
+              </div>
+              <pre id="connection-advanced-output">No connection test run yet.</pre>
+            </details>
+            <details>
+              <summary>Troubleshooting</summary>
+              <ol class="wizard-steps">
+                <li>Open your Unreal project.</li>
+                <li>Go to Tools → Revolt Bridge.</li>
+                <li>Click Start Bridge.</li>
+                <li>Come back here and click Test Connection again.</li>
+              </ol>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="playable-workflow" class="page" data-mode-scope="beginner">
+        <header>
+          <p class="eyebrow">Beginner workflow</p>
+          <h2>Make This Level Playable</h2>
+          <p class="lede">Run a read-only level check, then preview safe fixes. Nothing changes until you approve a dry-run in the existing approval flow.</p>
+        </header>
+        <div class="playable-layout">
+          <div class="panel">
+            <h3>Read-Only Level Check</h3>
+            <p class="message">This check looks at the open level only. It does not edit actors, assets, maps, or settings.</p>
+            <button id="run-playable-check" class="primary">Run Level Check</button>
+            <div id="playable-summary" class="playable-summary-grid"></div>
+            <p id="playable-message" class="message">Open Unreal, start the Revolt Bridge, then run the level check.</p>
+          </div>
+          <div class="panel">
+            <h3>Fix Plan</h3>
+            <p class="message">Choose a fix to preview. Mutating commands are sent as dry-run with approval disabled.</p>
+            <div id="playable-fix-list" class="playable-fix-list"></div>
+            <div class="button-row">
+              <button id="dry-run-playable-all" class="primary">Dry-run all safe fixes</button>
+              <button id="dry-run-playable-selected">Dry-run selected fix</button>
+            </div>
+            <div class="button-row">
+              <button id="explain-playable-fix">Explain this</button>
+              <button id="toggle-playable-technical">Show Technical Details</button>
+            </div>
+            <div id="playable-explanation" class="approval-summary">Select a fix to see a beginner explanation.</div>
+            <pre id="playable-technical" hidden>Technical details are hidden in Beginner Mode.</pre>
+            <pre id="playable-dryrun-response" hidden>No dry-run response yet.</pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="prototype-wizard" class="page" data-mode-scope="beginner">
+        <header>
+          <p class="eyebrow">Beginner planning</p>
+          <h2>What Do You Want to Build?</h2>
+          <p class="lede">Choose a simple direction and create a readable dry-run plan. No Unreal project changes happen here.</p>
+        </header>
+        <div class="prototype-layout">
+          <form id="prototype-form" class="panel">
+            <h3>Wizard Steps</h3>
+            <ol class="wizard-steps">
+              <li>Choose game type</li>
+              <li>Choose scope</li>
+              <li>Choose gameplay style</li>
+              <li>Choose setup style</li>
+              <li>Generate recommended plan</li>
+            </ol>
+            <label>
+              Step 1: Game type
+              <select id="prototypeGameType">
+                <option>First-person shooter</option>
+                <option>Third-person shooter</option>
+                <option>Horror game</option>
+                <option>Survival game</option>
+                <option>Wave-based zombie game</option>
+                <option>Exploration game</option>
+                <option>Platformer</option>
+                <option>Top-down shooter</option>
+                <option>RPG prototype</option>
+                <option>Blank project</option>
+              </select>
+            </label>
+            <label>
+              Step 2: Scope
+              <select id="prototypeScope">
+                <option>Tiny test room</option>
+                <option>Small arena</option>
+                <option>Linear level</option>
+                <option>Open area</option>
+                <option>Prototype only</option>
+              </select>
+            </label>
+            <label>
+              Step 3: Gameplay style
+              <select id="prototypeGameplayStyle">
+                <option>No combat</option>
+                <option>Guns</option>
+                <option>Melee</option>
+                <option>Magic</option>
+                <option>Stealth</option>
+                <option>Survival crafting</option>
+                <option>Exploration/objectives</option>
+              </select>
+            </label>
+            <label>
+              Step 4: Setup style
+              <select id="prototypeSetupStyle">
+                <option>Beginner-friendly Blueprint setup</option>
+                <option>Data-driven generated setup</option>
+                <option>Advanced C++-friendly setup</option>
+              </select>
+            </label>
+            <div class="button-row">
+              <button id="create-prototype-plan" class="primary" type="submit">Create Dry-Run Plan</button>
+              <button id="send-prototype-recipe" type="button">Send to Guided Recipe</button>
+            </div>
+            <p class="message">A local model is optional. This wizard works offline and does not execute commands.</p>
+            <p id="prototype-message" class="message"></p>
+          </form>
+          <div class="panel">
+            <h3>Recommended Plan</h3>
+            <div id="prototype-plan-output" class="prototype-plan-empty">Create a dry-run plan to see beginner-friendly next steps.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="recipes" class="page" data-mode-scope="beginner">
+        <header>
+          <p class="eyebrow">Guided workflows</p>
+          <h2>Recipes</h2>
+          <p class="lede">Beginner-friendly forms that preview technical commands first. Recipe execution defaults to dry-run and approval-required.</p>
+        </header>
+        <div class="recipe-layout">
+          <div>
+            <div id="recipe-cards" class="recipe-grid"></div>
+            <div class="panel">
+              <h3>Recent Recipe Runs</h3>
+              <div class="table-wrap compact-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Recipe</th>
+                      <th>Status</th>
+                      <th>Summary</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recipe-runs-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <h3 id="recipe-detail-title">Choose a recipe</h3>
+            <p id="recipe-detail-description" class="message">Open a recipe card to see its guided form and generated command plan.</p>
+            <div id="recipe-approval-summary" class="approval-summary">Choose a recipe to see the beginner approval summary.</div>
+            <form id="recipe-form" class="recipe-form"></form>
+            <div class="button-row">
+              <button id="preview-recipe" type="button">Preview Command Plan</button>
+              <button id="run-recipe-dry-run" class="primary" type="button">Run Dry-Run</button>
+            </div>
+            <label class="check recipe-approval-check">
+              <input id="recipe-approved" type="checkbox" />
+              I approve applying this generated recipe after reviewing the dry-run plan.
+            </label>
+            <button id="apply-approved-recipe" class="primary" type="button">Apply Approved Recipe</button>
+            <p id="recipe-message" class="message">No commands run until you click Run Dry-Run.</p>
+            <h3>Technical Details</h3>
+            <pre id="recipe-command-plan">Select a recipe to preview the command plan.</pre>
+            <div id="recipe-result-panel" class="recipe-result-panel">
+              <h3>Post-Run Result</h3>
+              <p class="message">Run a recipe dry-run or approved apply to see results.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="dashboard" class="page">
+        <header>
+          <p class="eyebrow">Phase 7</p>
+          <h2>Dashboard</h2>
+          <p class="lede">Local status for Unreal, MCP, offline mode, and the active project.</p>
+        </header>
+        <div class="cards">
+          <article class="card" id="card-unreal"></article>
+          <article class="card" id="card-mcp"></article>
+          <article class="card" id="card-offline"></article>
+          <article class="card">
+            <span class="status-dot unknown"></span>
+            <h3>Active project</h3>
+            <p id="active-project">Unknown until Unreal bridge reports a project.</p>
+          </article>
+          <article class="card" id="card-model"></article>
+          <article class="card" id="card-model-detail"></article>
+          <article class="card" id="card-index"></article>
+          <article class="card" id="card-setup-checklist"></article>
+        </div>
+        <div class="panel" id="dashboard-unreal-setup-card">
+          <h3>Connect Unreal to get started</h3>
+          <p class="message">This app works with Unreal through a local bridge. Open your Unreal project, start the Revolt Bridge panel, then test the connection here.</p>
+          <button id="dashboard-connect-unreal" class="primary">Connect to Unreal</button>
+        </div>
+        <button id="check-unreal" class="primary">Test Connection</button>
+      </section>
+
+      <section id="unreal" class="page">
+        <header>
+          <p class="eyebrow">Local only</p>
+          <h2>Unreal Connection</h2>
+          <p class="lede">To connect: Open Unreal → Tools → Revolt Bridge → Start Bridge → Test Connection.</p>
+        </header>
+        <div class="panel">
+          <h3>Connection Status</h3>
+          <div id="unreal-details"></div>
+          <div class="button-row">
+            <button id="open-connect-unreal" class="primary">Connect to Unreal</button>
+            <button id="check-unreal-secondary">Test Connection</button>
+          </div>
+          <details>
+            <summary>Advanced connection settings</summary>
+            <p id="unreal-advanced-details" class="message">Endpoint and raw response are shown on the Connect to Unreal page.</p>
+          </details>
+          <details>
+            <summary>Troubleshooting</summary>
+            <p class="message">If Unreal is not connected, open Tools → Revolt Bridge in Unreal and click Start Bridge.</p>
+          </details>
+        </div>
+      </section>
+
+      <section id="mcp" class="page">
+        <header>
+          <p class="eyebrow">MCP</p>
+          <h2>MCP Server</h2>
+          <p class="lede">Tracks the configured local MCP server entry point.</p>
+        </header>
+        <div class="panel" id="mcp-details"></div>
+      </section>
+
+      <section id="manual" class="page">
+        <header>
+          <p class="eyebrow">No model required</p>
+          <h2>Manual Command Mode</h2>
+          <p class="lede">Run common local Unreal bridge tools without internet, cloud providers, or a local model.</p>
+        </header>
+        <div class="manual-layout">
+          <div class="panel">
+            <h3>Command Form</h3>
+            <label>
+              Common tool
+              <select id="manualCommand">
+                <option value="ping">Ping Unreal</option>
+                <option value="get_project_summary">Get project summary</option>
+                <option value="get_open_level_summary">Get open level summary</option>
+                <option value="get_selected_actors">Get selected actors</option>
+                <option value="find_assets">Find assets</option>
+                <option value="audit_current_level">Run current level audit</option>
+                <option value="create_biome_asset">Create biome from pasted JSON</option>
+                <option value="validate_biome_asset">Validate biome</option>
+                <option value="landgen_generate_preview">Generate land preview</option>
+                <option value="landgen_spawn_biome_content">Spawn biome content</option>
+                <option value="landgen_clear_generated_content">Clear generated content</option>
+                <option value="compile_blueprint">Compile generated Blueprint</option>
+                <option value="save_generated_assets">Save generated assets</option>
+              </select>
+            </label>
+            <div class="settings-grid manual-fields">
+              <label>Asset or Blueprint path <input id="manualAssetPath" placeholder="/Game/RevoltGenerated/Biomes/BP_Test" /></label>
+              <label>LandGen actor path/name <input id="manualActorPath" placeholder="RevoltLandGenActor_1" /></label>
+              <label>Find assets path <input id="manualFindPath" value="/Game" /></label>
+              <label>Find assets name filter <input id="manualFindName" placeholder="Biome" /></label>
+              <label>Find assets class/type <input id="manualFindClass" placeholder="Blueprint" /></label>
+              <label>Max results <input id="manualMaxResults" type="number" min="1" value="50" /></label>
+            </div>
+            <label>
+              Biome JSON
+              <textarea id="manualBiomeJson" rows="8" placeholder='{"biome_name":"TestBiome","seed":12345}'></textarea>
+            </label>
+            <div class="button-row">
+              <label class="check"><input id="manualDryRun" type="checkbox" checked /> Dry-run</label>
+              <label class="check"><input id="manualApproved" type="checkbox" /> Approved</label>
+            </div>
+            <div class="button-row">
+              <button id="refresh-manual-json">Refresh JSON</button>
+              <button id="run-manual-command" class="primary">Run Manual Command</button>
+            </div>
+            <p id="manual-message" class="message">Mutating commands default to dry-run and require explicit approval to apply.</p>
+          </div>
+          <div class="panel">
+            <h3>Raw JSON</h3>
+            <label>
+              Request
+              <textarea id="manualRequestJson" rows="14"></textarea>
+            </label>
+            <label>
+              Response
+              <textarea id="manualResponseJson" rows="14" readonly></textarea>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section id="history" class="page">
+        <header>
+          <p class="eyebrow">Persistent SQLite</p>
+          <h2>Command History</h2>
+          <p class="lede">Local command records survive app restarts.</p>
+        </header>
+        <div class="button-row">
+          <button id="export-history" class="primary">Export History JSON</button>
+          <button id="clear-history" class="danger">Clear Command History</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Command</th>
+                <th>Target</th>
+                <th>Status</th>
+                <th>Summary</th>
+              </tr>
+            </thead>
+            <tbody id="history-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="approvals" class="page">
+        <header>
+          <p class="eyebrow">Safety gate</p>
+          <h2>Approval Queue</h2>
+          <p class="lede">Approval persistence is ready; live queue forwarding comes in a later integration phase.</p>
+        </header>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Command</th>
+                <th>Target</th>
+                <th>Decision</th>
+              </tr>
+            </thead>
+            <tbody id="approvals-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="settings" class="page">
+        <header>
+          <p class="eyebrow">Local defaults</p>
+          <h2>Settings</h2>
+          <p class="lede">Configure local bridge and runtime behavior. Cloud providers remain disabled by default.</p>
+        </header>
+        <form id="settings-form" class="settings-grid">
+          <label>UE bridge host <input id="ueBridgeHost" name="ueBridgeHost" /></label>
+          <label>UE bridge port <input id="ueBridgePort" name="ueBridgePort" type="number" min="1" max="65535" /></label>
+          <label>MCP server command <input id="mcpServerCommand" name="mcpServerCommand" /></label>
+          <label>MCP server path <input id="mcpServerPath" name="mcpServerPath" /></label>
+          <label data-mode-scope="advanced">
+            Default permission mode
+            <select id="defaultPermissionMode" name="defaultPermissionMode">
+              <option>ReadOnly</option>
+              <option>SafeEdit</option>
+              <option>ProjectEdit</option>
+              <option id="dangerous-option">Dangerous</option>
+            </select>
+          </label>
+          <label>
+            Experience mode
+            <select id="experienceMode" name="experienceMode">
+              <option value="beginner">Beginner Mode</option>
+              <option value="advanced">Advanced Mode</option>
+            </select>
+          </label>
+          <label class="check" data-mode-scope="advanced"><input id="enableOnlineProviders" name="enableOnlineProviders" type="checkbox" /> Enable Online Providers</label>
+          <label class="check"><input id="offlineMode" name="offlineMode" type="checkbox" /> Offline Mode</label>
+          <button class="primary" type="submit">Save Settings</button>
+        </form>
+        <p id="settings-message" class="message"></p>
+      </section>
+
+      <section id="models" class="page">
+        <header>
+          <p class="eyebrow">Offline local models</p>
+          <h2>Model Profiles</h2>
+          <p class="lede">Create local profiles for Ollama, LM Studio, llama.cpp, or a local OpenAI-compatible endpoint.</p>
+        </header>
+        <div class="model-layout">
+          <form id="model-form" class="settings-grid">
+            <input id="modelProfileId" type="hidden" />
+            <label>
+              Provider type
+              <select id="modelProviderType">
+                <option value="ollama">Ollama</option>
+                <option value="lmstudio">LM Studio</option>
+                <option value="llamacpp">llama.cpp server</option>
+                <option value="openai-compatible">Local OpenAI-compatible endpoint</option>
+              </select>
+            </label>
+            <label>Display name <input id="modelDisplayName" placeholder="Local Llama 3" /></label>
+            <label>Base URL <input id="modelBaseUrl" placeholder="http://127.0.0.1:11434" /></label>
+            <label>Model name <input id="modelName" placeholder="llama3.1" /></label>
+            <label>Context length <input id="modelContextLength" type="number" min="512" value="4096" /></label>
+            <label>Temperature <input id="modelTemperature" type="number" min="0" max="2" step="0.01" value="0.2" /></label>
+            <label>Max output tokens <input id="modelMaxOutputTokens" type="number" min="1" value="512" /></label>
+            <label>
+              Classification
+              <select id="modelClassification">
+                <option value="offline">offline</option>
+                <option value="local-network">local-network</option>
+              </select>
+            </label>
+            <button class="primary" type="submit">Save Model Profile</button>
+            <button id="new-model-profile" type="button">New Profile</button>
+          </form>
+          <div class="panel">
+            <h3>Active Model</h3>
+            <select id="activeModelProfile"></select>
+            <div class="button-row">
+              <button id="set-active-model" class="primary">Select Active Model</button>
+              <button id="test-active-model">Test Connection</button>
+            </div>
+            <button id="summarize-project" class="primary">Summarize Current Unreal Project</button>
+            <p id="model-message" class="message"></p>
+            <pre id="model-summary-result"></pre>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Provider</th>
+                <th>Base URL</th>
+                <th>Model</th>
+                <th>Classification</th>
+                <th>Last Test</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="models-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="model-setup" class="page">
+        <header>
+          <p class="eyebrow">Offline wizard</p>
+          <h2>Local Model Setup</h2>
+          <p class="lede">Connect Ollama, LM Studio, llama.cpp, or a local OpenAI-compatible endpoint without cloud providers.</p>
+        </header>
+        <div class="wizard-layout">
+          <div class="panel">
+            <h3>Step-by-step setup</h3>
+            <ol class="wizard-steps">
+              <li>Choose provider</li>
+              <li>Detect local endpoint</li>
+              <li>Enter or confirm base URL</li>
+              <li>Fetch or enter model name</li>
+              <li>Test connection</li>
+              <li>Run safe test prompt</li>
+              <li>Save model profile</li>
+              <li>Set as active model</li>
+            </ol>
+            <label>
+              Provider
+              <select id="wizardProviderType">
+                <option value="ollama">Ollama · Offline</option>
+                <option value="lmstudio">LM Studio · Offline / Local Network</option>
+                <option value="llamacpp">llama.cpp server · Offline</option>
+                <option value="openai-compatible">Local OpenAI-compatible endpoint · Offline / Local Network</option>
+              </select>
+            </label>
+            <label>Base URL <input id="wizardBaseUrl" value="http://127.0.0.1:11434" /></label>
+            <label>Detected models
+              <select id="wizardDetectedModels">
+                <option value="">No models detected yet</option>
+              </select>
+            </label>
+            <label>Model name <input id="wizardModelName" placeholder="llama3.1" /></label>
+            <label>Display name <input id="wizardDisplayName" placeholder="Ollama Local" /></label>
+            <div class="settings-grid">
+              <label>Context length <input id="wizardContextLength" type="number" min="1" value="4096" /></label>
+              <label>Temperature <input id="wizardTemperature" type="number" min="0" max="2" step="0.01" value="0.2" /></label>
+              <label>Max output tokens <input id="wizardMaxOutputTokens" type="number" min="1" value="512" /></label>
+              <label>
+                Classification
+                <select id="wizardClassification">
+                  <option value="offline">Offline</option>
+                  <option value="local-network">Local Network</option>
+                </select>
+              </label>
+            </div>
+            <p class="message">Safe test prompt: “Reply with the word READY and a one-sentence description of your coding capability.” No Unreal project data is included.</p>
+            <div class="button-row">
+              <button id="wizard-detect">Detect Endpoint</button>
+              <button id="wizard-test">Test Connection</button>
+              <button id="wizard-save" class="primary">Save Profile</button>
+              <button id="wizard-save-active" class="primary">Save + Set Active</button>
+            </div>
+            <p id="wizard-message" class="message">No local model is configured. Manual Command Mode is still available.</p>
+          </div>
+          <div class="panel">
+            <h3>Connection Result</h3>
+            <pre id="wizard-result"></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="indexing" class="page">
+        <header>
+          <p class="eyebrow">Local project index</p>
+          <h2>Project Index</h2>
+          <p class="lede">Scan selected project folders locally. No remote vector database or cloud embeddings are used.</p>
+        </header>
+        <div class="panel">
+          <label>Project folder <input id="projectIndexRoot" placeholder="E:\\Ue Plugin" /></label>
+          <div class="button-row">
+            <button id="choose-index-root">Choose Folder</button>
+            <button id="start-indexing" class="primary">Start Indexing</button>
+            <button id="stop-indexing">Stop Indexing</button>
+            <button id="clear-local-index" class="danger">Clear Local Index</button>
+          </div>
+          <div class="cards">
+            <article class="card">
+              <span class="status-dot unknown"></span>
+              <h3>Last index time</h3>
+              <p id="last-index-time">Never</p>
+            </article>
+            <article class="card">
+              <span class="status-dot online"></span>
+              <h3>Indexed files</h3>
+              <p id="indexed-file-count">0</p>
+            </article>
+            <article class="card">
+              <span class="status-dot online"></span>
+              <h3>Indexed assets</h3>
+              <p id="indexed-asset-count">0</p>
+            </article>
+            <article class="card">
+              <span class="status-dot online"></span>
+              <h3>Indexed scenes</h3>
+              <p id="indexed-scene-count">0</p>
+            </article>
+          </div>
+          <p id="index-status-message" class="message">Metadata-only indexing is used when no local model profile is active.</p>
+        </div>
+      </section>
+
+      <section id="offline" class="page">
+        <header>
+          <p class="eyebrow">No telemetry</p>
+          <h2>Offline Mode</h2>
+          <p class="lede">The desktop runtime launches without login, cloud providers, telemetry, or model inference.</p>
+        </header>
+        <div class="panel">
+          <ul class="offline-list">
+            <li>No cloud provider is configured by default.</li>
+            <li>No telemetry collection is implemented.</li>
+            <li>No model inference is implemented in Phase 7.</li>
+            <li>Phase 8 model routing supports local/offline model endpoints only.</li>
+            <li>Phase 9 indexing stores files, chunks, asset metadata, and scene summaries locally.</li>
+            <li>Unreal communication uses the configured local bridge endpoint.</li>
+            <li>With no model selected, the app remains in Manual Command Mode.</li>
+            <li>Dangerous permission mode is disabled unless explicitly enabled in config.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="../renderer/renderer.js"></script>
+  </body>
+</html>

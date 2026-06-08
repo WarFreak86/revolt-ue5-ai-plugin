@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+desktop/node_modules/
+mcp-server/node_modules/
+
+# Build output
+dist/
+desktop/dist/
+mcp-server/dist/
+build/
+out/
+
+# Unreal generated folders
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+.vs/
+
+# Unreal project generated files
+*.sln
+*.VC.db
+*.opensdf
+*.opendb
+
+# Logs
+*.log
+logs/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,35 @@
+{
+  "biome_name": "ForestBiome",
+  "seed": 14231,
+  "terrain": {
+    "terrain_resolution": 1024,
+    "min_height": 50,
+    "max_height": 850,
+    "min_slope": 0,
+    "max_slope": 35,
+    "noise_scale": 0.85
+  },
+  "foliage_rules": [
+    {
+      "rule_name": "PineClusters",
+      "mesh": "/Game/RevoltGenerated/Placeholder/SM_Pine",
+      "density": 0.65,
+      "min_scale": 0.8,
+      "max_scale": 1.6,
+      "min_slope": 0,
+      "max_slope": 25,
+      "min_height": 80,
+      "max_height": 760
+    }
+  ],
+  "structure_rules": [],
+  "objective_rules": [],
+  "navigation": {
+    "allow_navmesh": true,
+    "preferred_path_width": 350
+  },
+  "lighting": {
+    "time_of_day": 14,
+    "weather": "Overcast"
+  }
+}

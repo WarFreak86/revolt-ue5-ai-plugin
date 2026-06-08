@@ -1,0 +1,12 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.7",
+	"Category": "",
+	"Description": "Host project for the RevoltEditorBridge plugin.",
+	"Plugins": [
+		{
+			"Name": "RevoltEditorBridge",
+			"Enabled": true
+		}
+	]
+}

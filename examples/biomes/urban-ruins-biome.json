@@ -1,0 +1,47 @@
+{
+  "biome_name": "UrbanRuinsBiome",
+  "seed": 39017,
+  "terrain": {
+    "terrain_resolution": 512,
+    "min_height": 0,
+    "max_height": 180,
+    "min_slope": 0,
+    "max_slope": 18,
+    "noise_scale": 0.35
+  },
+  "foliage_rules": [
+    {
+      "rule_name": "CrackedGrass",
+      "mesh": "/Game/RevoltGenerated/Placeholder/SM_GrassClump",
+      "density": 0.22,
+      "min_scale": 0.5,
+      "max_scale": 1.1,
+      "min_slope": 0,
+      "max_slope": 10,
+      "min_height": 0,
+      "max_height": 160
+    }
+  ],
+  "structure_rules": [
+    {
+      "rule_name": "RuinedBuildings",
+      "actor_class": "/Script/Engine.StaticMeshActor",
+      "density": 0.18,
+      "min_scale": 0.8,
+      "max_scale": 1.4,
+      "min_slope": 0,
+      "max_slope": 8,
+      "min_height": 0,
+      "max_height": 160
+    }
+  ],
+  "objective_rules": [],
+  "navigation": {
+    "allow_navmesh": true,
+    "preferred_path_width": 280
+  },
+  "lighting": {
+    "time_of_day": 18,
+    "weather": "Dust"
+  }
+}
