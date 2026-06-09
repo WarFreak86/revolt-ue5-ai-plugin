@@ -2,11 +2,13 @@
 node_modules/
 desktop/node_modules/
 mcp-server/node_modules/
+.npm-cache/
 
 # Build output
 dist/
 desktop/dist/
 mcp-server/dist/
+dist-packages/
 build/
 out/
 
@@ -37,3 +39,7 @@ logs/
 Thumbs.db
 .vscode/
 .idea/
+
+# Junk/local notes
+New Text Document.txt
+New Text Document (2).txt
