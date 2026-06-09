@@ -161,7 +161,16 @@ private:
 	bool EnsureGeneratedFolderExists(const FString& PackagePath, bool bDryRun, FString& ErrorCode, FString& ErrorMessage) const;
 	UClass* ResolveApprovedDataAssetClass(const FString& ClassName, FString& ErrorCode, FString& ErrorMessage) const;
 	UObject* LoadAssetForMutation(const FString& AssetPath, UClass* ExpectedClass, FString& ErrorCode, FString& ErrorMessage) const;
-	bool ApplyEditablePropertyValue(UObject* Object, const FString& PropertyName, const TSharedPtr<FJsonValue>& Value, FString& BeforeValue, FString& AfterValue, bool bDryRun, FString& ErrorCode, FString& ErrorMessage) const;
+	bool ApplyEditablePropertyValue(
+		UObject* Object,
+		const FString& PropertyName,
+		const TSharedPtr<FJsonValue>& Value,
+		FString& BeforeValue,
+		FString& AfterValue,
+		bool bDryRun,
+		FString& ErrorCode,
+		FString& ErrorMessage
+	) const;
 	bool SavePackageForAsset(UObject* Asset, FString& ErrorCode, FString& ErrorMessage) const;
 	bool NormalizeGeneratedBlueprintAssetPath(const TSharedPtr<FJsonObject>& Params, FString& OutPackagePath, FString& OutAssetName, FString& OutAssetPath, FString& ErrorCode, FString& ErrorMessage) const;
 	UClass* ResolveSafeBlueprintParentClass(const FString& ParentClassName, FString& ErrorCode, FString& ErrorMessage) const;
@@ -179,7 +188,17 @@ private:
 	bool MakeSupportedBlueprintPinType(const FString& VariableType, FEdGraphPinType& OutPinType, FString& ErrorCode, FString& ErrorMessage) const;
 	FString GetBlueprintCompileStatusString(const UBlueprint* Blueprint) const;
 	bool CompileBlueprintAndValidate(UBlueprint* Blueprint, FString& ErrorCode, FString& ErrorMessage) const;
-	void AddAuditIssue(TArray<TSharedPtr<FJsonValue>>& Issues, const FString& Source, const FString& Severity, const FString& Code, const FString& AffectedType, const FString& Affected, const FString& Message, const FString& RecommendedFix, int32& IssueCounter) const;
+	void AddAuditIssue(
+		TArray<TSharedPtr<FJsonValue>>& Issues,
+		const FString& Source,
+		const FString& Severity,
+		const FString& Code,
+		const FString& AffectedType,
+		const FString& Affected,
+		const FString& Message,
+		const FString& RecommendedFix,
+		int32& IssueCounter
+	) const;
 	TSharedPtr<FJsonObject> MakeFixPlanItemFromIssue(const TSharedPtr<FJsonObject>& Issue) const;
 	void AddActorAuditIssues(AActor* Actor, TArray<TSharedPtr<FJsonValue>>& Issues, const FString& Source, int32& IssueCounter) const;
 	bool EnsureArenaTemplateFolders(bool bDryRun, FString& ErrorCode, FString& ErrorMessage) const;
@@ -191,7 +210,14 @@ private:
 	bool IsZombieTemplateAssetPath(const FString& AssetPath) const;
 	URevoltZombieEnemyData* LoadZombieEnemyData(const FString& AssetPath, FString& ErrorCode, FString& ErrorMessage) const;
 	URevoltZombieWaveData* LoadZombieWaveData(const FString& AssetPath, FString& ErrorCode, FString& ErrorMessage) const;
-	TArray<TSharedPtr<FJsonObject>> BuildDryRunDiff(const FString& RequestId, const FString& Command, const TSharedPtr<FJsonObject>& Params, const TSharedPtr<FJsonObject>& Preview, const FString& Target, FString& OutRiskLevel) const;
+	TArray<TSharedPtr<FJsonObject>> BuildDryRunDiff(
+		const FString& RequestId,
+		const FString& Command,
+		const TSharedPtr<FJsonObject>& Params,
+		const TSharedPtr<FJsonObject>& Preview,
+		const FString& Target,
+		FString& OutRiskLevel
+	) const;
 	TSharedPtr<FJsonObject> MakeDiffItemObject(const FRevoltDryRunDiffItem& Item) const;
 	FString JsonValueToDisplayString(const TSharedPtr<FJsonValue>& Value) const;
 	FString JsonObjectToDisplayString(const TSharedPtr<FJsonObject>& Object) const;

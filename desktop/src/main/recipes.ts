@@ -217,7 +217,7 @@ export function buildRecipeResultPanel(recipe: RecipeDefinition, response: unkno
   const responses = Array.isArray(response) ? response : [];
   const blueprintCreated = approved && responses.some((item) => isOkResponseForCommand(item, "create_blueprint_class")) ? "Yes" : approved ? "Attempted" : "Not created during dry-run";
   const variablesAdded = approved && responses.some((item) => isOkResponseForCommand(item, "add_blueprint_variable")) ? "HealAmount and RespawnTime planned/applied" : "Planned only";
-  const compileResponse = responses.find((item) => isOkResponseForCommand(item, "compile_blueprint")) as { response?: { result?: Record<string, unknown> } } | undefined;
+  const compileResponse = responses.find((item) => isOkResponseForCommand(item, "compile_blueprint")) as { response?: { result?: Record<string, unknown>; }; } | undefined;
   const compileResult = compileResponse?.response?.result;
   const compiledStatus = typeof compileResult?.after_status === "string" ? compileResult.after_status : approved ? "Check Unreal compile result details" : "Not compiled during dry-run";
   const placedInLevel = recipe.generatedCommandPlan.some((step) => step.command === "spawn_actor")
@@ -443,14 +443,14 @@ function sanitizeAssetName(assetName: string): string {
 }
 
 function isOkResponseForCommand(value: unknown, command: string): boolean {
-  const item = value as { request?: { command?: string }; ok?: boolean } | undefined;
+  const item = value as { request?: { command?: string; }; ok?: boolean; } | undefined;
   return item?.request?.command === command && item.ok === true;
 }
 
-function vectorObject(value: [number, number, number]): { x: number; y: number; z: number } {
+function vectorObject(value: [number, number, number]): { x: number; y: number; z: number; } {
   return { x: value[0], y: value[1], z: value[2] };
 }
 
-function rotatorObject(value: [number, number, number]): { pitch: number; yaw: number; roll: number } {
+function rotatorObject(value: [number, number, number]): { pitch: number; yaw: number; roll: number; } {
   return { pitch: value[0], yaw: value[1], roll: value[2] };
 }

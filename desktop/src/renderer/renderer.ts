@@ -25,46 +25,46 @@ declare global {
   interface Window {
     revoltRuntime: {
       getInitialState: () => Promise<DesktopAppState>;
-      checkUnrealBridge: () => Promise<{ status: StatusCard; history: CommandHistoryEntry[] }>;
-      testDefaultUnrealConnection: () => Promise<{ result: { ok: boolean; status: string; endpoint: string; message: string; detail: string; checkedAt: string; response: unknown }; history: CommandHistoryEntry[] }>;
+      checkUnrealBridge: () => Promise<{ status: StatusCard; history: CommandHistoryEntry[]; }>;
+      testDefaultUnrealConnection: () => Promise<{ result: { ok: boolean; status: string; endpoint: string; message: string; detail: string; checkedAt: string; response: unknown; }; history: CommandHistoryEntry[]; }>;
       getMcpStatus: () => Promise<StatusCard>;
       getSettings: () => Promise<RuntimeSettings>;
       updateSettings: (settings: RuntimeSettings) => Promise<RuntimeSettings>;
       listHistory: () => Promise<CommandHistoryEntry[]>;
       clearHistory: () => Promise<CommandHistoryEntry[]>;
-      exportHistory: () => Promise<{ exported: boolean; path: string; history?: CommandHistoryEntry[] }>;
+      exportHistory: () => Promise<{ exported: boolean; path: string; history?: CommandHistoryEntry[]; }>;
       listApprovals: () => Promise<ApprovalEvent[]>;
-      checkPlayableLevel: () => Promise<{ workflow: PlayableLevelWorkflowResult; history: CommandHistoryEntry[] }>;
-      dryRunPlayableFixes: (fixIds: string[]) => Promise<{ workflow: PlayableLevelWorkflowResult; responses: unknown[]; history: CommandHistoryEntry[] }>;
-      createPrototypeDryRunPlan: (input: GamePrototypeWizardInput) => Promise<{ plan: GamePrototypePlan; history: CommandHistoryEntry[] }>;
+      checkPlayableLevel: () => Promise<{ workflow: PlayableLevelWorkflowResult; history: CommandHistoryEntry[]; }>;
+      dryRunPlayableFixes: (fixIds: string[]) => Promise<{ workflow: PlayableLevelWorkflowResult; responses: unknown[]; history: CommandHistoryEntry[]; }>;
+      createPrototypeDryRunPlan: (input: GamePrototypeWizardInput) => Promise<{ plan: GamePrototypePlan; history: CommandHistoryEntry[]; }>;
       getLatestPrototypePlan: () => Promise<GamePrototypePlan | null>;
-      sendPrototypePlanToGuidedRecipe: (planId: string) => Promise<{ message: string; history: CommandHistoryEntry[] }>;
+      sendPrototypePlanToGuidedRecipe: (planId: string) => Promise<{ message: string; history: CommandHistoryEntry[]; }>;
       listRecipes: () => Promise<RecipeDefinition[]>;
       previewRecipe: (recipeId: string, values: Record<string, unknown>) => Promise<RecipeDefinition>;
       runRecipeDryRun: (
         recipeId: string,
         values: Record<string, unknown>
-      ) => Promise<{ recipe: RecipeDefinition; run: RecipeRunRecord; history: CommandHistoryEntry[]; recentRecipeRuns: RecipeRunRecord[] }>;
+      ) => Promise<{ recipe: RecipeDefinition; run: RecipeRunRecord; history: CommandHistoryEntry[]; recentRecipeRuns: RecipeRunRecord[]; }>;
       applyApprovedRecipe: (
         recipeId: string,
         values: Record<string, unknown>
-      ) => Promise<{ recipe: RecipeDefinition; run: RecipeRunRecord; history: CommandHistoryEntry[]; recentRecipeRuns: RecipeRunRecord[] }>;
+      ) => Promise<{ recipe: RecipeDefinition; run: RecipeRunRecord; history: CommandHistoryEntry[]; recentRecipeRuns: RecipeRunRecord[]; }>;
       listRecipeRuns: () => Promise<RecipeRunRecord[]>;
-      runManualCommand: (request: ManualCommandRequest) => Promise<ManualCommandResult & { history: CommandHistoryEntry[] }>;
+      runManualCommand: (request: ManualCommandRequest) => Promise<ManualCommandResult & { history: CommandHistoryEntry[]; }>;
       listModelProfiles: () => Promise<ModelProfile[]>;
       saveModelProfile: (input: ModelProfileInput) => Promise<ModelProfile>;
-      deleteModelProfile: (id: string) => Promise<{ settings: RuntimeSettings; modelProfiles: ModelProfile[] }>;
+      deleteModelProfile: (id: string) => Promise<{ settings: RuntimeSettings; modelProfiles: ModelProfile[]; }>;
       setActiveModelProfile: (id: string) => Promise<RuntimeSettings>;
       detectModelProvider: (providerType: ModelProviderType, baseUrl: string) => Promise<ProviderDetectionResult>;
-      duplicateModelProfile: (id: string) => Promise<{ profile: ModelProfile; modelProfiles: ModelProfile[] }>;
-      setModelProfileEnabled: (id: string, enabled: boolean) => Promise<{ settings: RuntimeSettings; modelProfiles: ModelProfile[] }>;
-      testModelProfile: (id: string) => Promise<{ result: { ok: boolean; message: string; status: string; responseText?: string }; history: CommandHistoryEntry[]; modelProfiles: ModelProfile[] }>;
-      summarizeProjectWithActiveModel: () => Promise<{ completion: { text: string }; history: CommandHistoryEntry[] }>;
+      duplicateModelProfile: (id: string) => Promise<{ profile: ModelProfile; modelProfiles: ModelProfile[]; }>;
+      setModelProfileEnabled: (id: string, enabled: boolean) => Promise<{ settings: RuntimeSettings; modelProfiles: ModelProfile[]; }>;
+      testModelProfile: (id: string) => Promise<{ result: { ok: boolean; message: string; status: string; responseText?: string; }; history: CommandHistoryEntry[]; modelProfiles: ModelProfile[]; }>;
+      summarizeProjectWithActiveModel: () => Promise<{ completion: { text: string; }; history: CommandHistoryEntry[]; }>;
       chooseIndexRoot: () => Promise<string>;
       getIndexStats: () => Promise<IndexStats>;
       startIndexing: (projectRoot: string) => Promise<IndexStats>;
       stopIndexing: () => Promise<IndexStats>;
-      clearLocalIndex: () => Promise<{ stats: IndexStats; history: CommandHistoryEntry[] }>;
+      clearLocalIndex: () => Promise<{ stats: IndexStats; history: CommandHistoryEntry[]; }>;
     };
   }
 }
@@ -192,8 +192,8 @@ function renderHistory(entries: CommandHistoryEntry[]): void {
   const body = requireElement("history-body");
   body.innerHTML = safeEntries.length
     ? safeEntries
-        .map(
-          (entry) => `
+      .map(
+        (entry) => `
             <tr>
               <td>${escapeHtml(formatDate(entry.timestamp))}</td>
               <td>${escapeHtml(entry.commandName)}</td>
@@ -202,8 +202,8 @@ function renderHistory(entries: CommandHistoryEntry[]): void {
               <td>${escapeHtml(entry.resultSummary)}</td>
             </tr>
           `
-        )
-        .join("")
+      )
+      .join("")
     : `<tr><td colspan="5">No command history yet.</td></tr>`;
 }
 
@@ -212,8 +212,8 @@ function renderApprovals(entries: ApprovalEvent[]): void {
   const body = requireElement("approvals-body");
   body.innerHTML = safeEntries.length
     ? safeEntries
-        .map(
-          (entry) => `
+      .map(
+        (entry) => `
             <tr>
               <td>${escapeHtml(formatDate(entry.timestamp))}</td>
               <td>${escapeHtml(entry.commandName)}</td>
@@ -221,8 +221,8 @@ function renderApprovals(entries: ApprovalEvent[]): void {
               <td>${escapeHtml(entry.decision)}</td>
             </tr>
           `
-        )
-        .join("")
+      )
+      .join("")
     : `<tr><td colspan="4">No approval events recorded yet.</td></tr>`;
 }
 
@@ -449,7 +449,7 @@ function unrealConnectionFailureHtml(message: string, detail: string): string {
   `;
 }
 
-function applyUnrealConnectionResult(result: { ok?: boolean; status?: string; endpoint?: string; message?: string; detail?: string; checkedAt?: string; response?: unknown } | undefined): void {
+function applyUnrealConnectionResult(result: { ok?: boolean; status?: string; endpoint?: string; message?: string; detail?: string; checkedAt?: string; response?: unknown; } | undefined): void {
   const ok = result?.ok === true;
   state.unrealStatus = ok
     ? { state: "online", label: "Connected to Unreal", detail: "You are ready to use Manual Command Mode or AI-assisted tools." }
@@ -1268,8 +1268,8 @@ function renderModelProfiles(): void {
   const body = requireElement("models-body");
   body.innerHTML = profiles.length
     ? profiles
-        .map(
-          (profile) => `
+      .map(
+        (profile) => `
             <tr>
               <td>${escapeHtml(profile.displayName)}</td>
               <td>${escapeHtml(providerLabel(profile.providerType))}</td>
@@ -1285,8 +1285,8 @@ function renderModelProfiles(): void {
               </td>
             </tr>
           `
-        )
-        .join("")
+      )
+      .join("")
     : `<tr><td colspan="7">No local model is configured. Manual Command Mode is still available.</td></tr>`;
 
   for (const button of Array.from(document.querySelectorAll<HTMLButtonElement>("[data-edit-model]"))) {
@@ -1506,13 +1506,44 @@ function renderPlayableWorkflow(workflow: PlayableLevelWorkflowResult | null): v
     return;
   }
 
-  summary.innerHTML = `
-    ${renderPlayableSummaryItem("Player can spawn", workflow.summary.playerCanSpawn, workflow.summary.playerCanSpawn === "No" ? "Player cannot spawn: no PlayerStart was detected." : "A player spawn point appears to exist.")}
-    ${renderPlayableSummaryItem("Player can move", workflow.summary.playerCanMove, workflow.summary.playerCanMove === "Unknown" ? "Movement setup could not be fully verified." : "A player pawn, character, or GameMode was detected.")}
-    ${renderPlayableSummaryItem("Level has lighting", workflow.summary.levelHasLighting, workflow.summary.levelHasLighting === "No" ? "No basic lighting actor was detected." : "Lighting appears to be present.")}
-    ${renderPlayableSummaryItem("Enemies can move", workflow.summary.enemiesCanMove, workflow.summary.enemiesCanMove === "Unknown" ? "No obvious AI movement requirement was detected." : "AI movement readiness was checked against NavMesh data.")}
-    ${renderPlayableSummaryItem("Objective exists", workflow.summary.objectiveExists, workflow.summary.objectiveExists === "No" ? "No simple objective marker was detected." : "An objective-like actor or tag was detected.")}
-  `;
+  const summaryItems = [
+    renderPlayableSummaryItem(
+      "Player can spawn",
+      workflow.summary.playerCanSpawn,
+      workflow.summary.playerCanSpawn === "No"
+        ? "Player cannot spawn: no PlayerStart was detected."
+        : "A player spawn point appears to exist."
+    ),
+    renderPlayableSummaryItem(
+      "Player can move",
+      workflow.summary.playerCanMove,
+      workflow.summary.playerCanMove === "Unknown"
+        ? "Movement setup could not be fully verified."
+        : "A player pawn, character, or GameMode was detected."
+    ),
+    renderPlayableSummaryItem(
+      "Level has lighting",
+      workflow.summary.levelHasLighting,
+      workflow.summary.levelHasLighting === "No"
+        ? "No basic lighting actor was detected."
+        : "Lighting appears to be present."
+    ),
+    renderPlayableSummaryItem(
+      "Enemies can move",
+      workflow.summary.enemiesCanMove,
+      workflow.summary.enemiesCanMove === "Unknown"
+        ? "No obvious AI movement requirement was detected."
+        : "AI movement readiness was checked against NavMesh data."
+    ),
+    renderPlayableSummaryItem(
+      "Objective exists",
+      workflow.summary.objectiveExists,
+      workflow.summary.objectiveExists === "No"
+        ? "No simple objective marker was detected."
+        : "An objective-like actor or tag was detected."
+    )
+  ];
+  summary.innerHTML = summaryItems.join("");
 
   const fixPlan = safeArray(workflow.fixPlan);
   fixList.innerHTML = fixPlan.length
@@ -1560,11 +1591,18 @@ function renderPlayableSummaryItem(label: string, value: string, detail: string)
 
 function renderPlayableFixCard(fix: PlayableFixItem): string {
   const selected = fix.id === selectedPlayableFixId ? " selected" : "";
+  const metadata = [
+    `Command: ${escapeHtml(fix.technicalCommand)}`,
+    `Risk: ${escapeHtml(fix.riskLevel)}`,
+    `Generated assets only: ${fix.modifiesGeneratedAssetsOnly ? "Yes" : "No"}`,
+    `Dry-run: ${fix.dryRunAvailable ? "Yes" : "No"}`
+  ].join(" · ");
+
   return `
     <article class="playable-fix-card${selected}">
       <strong>${escapeHtml(fix.label)}</strong>
       <span>${escapeHtml(fix.beginnerExplanation)}</span>
-      <small>Command: ${escapeHtml(fix.technicalCommand)} · Risk: ${escapeHtml(fix.riskLevel)} · Generated assets only: ${fix.modifiesGeneratedAssetsOnly ? "Yes" : "No"} · Dry-run: ${fix.dryRunAvailable ? "Yes" : "No"}</small>
+      <small>${metadata}</small>
       <button data-select-playable-fix="${escapeHtml(fix.id)}">${selected ? "Selected" : "Select Fix"}</button>
     </article>
   `;
@@ -1602,8 +1640,8 @@ function renderRecipeCards(): void {
   const recipes = safeArray(state.recipes);
   container.innerHTML = recipes.length
     ? recipes
-    .map(
-      (recipe) => `
+      .map(
+        (recipe) => `
         <article class="recipe-card">
           <strong>${escapeHtml(recipe.title)}</strong>
           <span>${escapeHtml(recipe.beginnerDescription)}</span>
@@ -1611,8 +1649,8 @@ function renderRecipeCards(): void {
           <button data-open-recipe="${escapeHtml(recipe.recipeId)}">Open Recipe</button>
         </article>
       `
-    )
-    .join("")
+      )
+      .join("")
     : `<p class="message">No recipes are loaded yet. Manual Command Mode is still available.</p>`;
 
   for (const button of Array.from(document.querySelectorAll<HTMLButtonElement>("[data-open-recipe]"))) {
@@ -1705,8 +1743,8 @@ function renderRecipeRuns(): void {
   const runs = safeArray(state.recentRecipeRuns);
   body.innerHTML = runs.length
     ? runs
-        .map(
-          (run) => `
+      .map(
+        (run) => `
             <tr>
               <td>${escapeHtml(formatDate(run.timestamp))}</td>
               <td>${escapeHtml(run.recipeTitle)}</td>
@@ -1714,8 +1752,8 @@ function renderRecipeRuns(): void {
               <td>${escapeHtml(run.summary)}</td>
             </tr>
           `
-        )
-        .join("")
+      )
+      .join("")
     : `<tr><td colspan="4">No recipe runs yet.</td></tr>`;
 }
 

@@ -6,7 +6,7 @@ interface BridgeResponse {
   id?: string;
   ok?: boolean;
   result?: unknown;
-  error?: { code?: string; message?: string };
+  error?: { code?: string; message?: string; };
 }
 
 export async function checkUnrealBridge(settings: RuntimeSettings): Promise<StatusCard> {

@@ -1225,11 +1225,25 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleAuditCurrentLevel
 
 	if (!bHasPlayerStart)
 	{
-		AddAuditIssue(Issues, TEXT("current_level"), TEXT("warning"), TEXT("map_without_player_start"), TEXT("level"), World->GetMapName(), TEXT("Current map has no PlayerStart actor."), TEXT("Add a PlayerStart if this map is intended for playtesting or gameplay."), IssueCounter);
+		AddAuditIssue(
+			Issues,
+			TEXT("current_level"),
+			TEXT("warning"),
+			TEXT("map_without_player_start"),
+			TEXT("level"),
+			World->GetMapName(), TEXT("Current map has no PlayerStart actor."), TEXT("Add a PlayerStart if this map is intended for playtesting or gameplay."), IssueCounter
+		);
 	}
 	if (bHasLikelyAiActor && !bHasNavMeshBounds)
 	{
-		AddAuditIssue(Issues, TEXT("current_level"), TEXT("warning"), TEXT("missing_navmesh_in_ai_map"), TEXT("level"), World->GetMapName(), TEXT("Likely AI actors were found but no NavMeshBoundsVolume was detected."), TEXT("Add a NavMeshBoundsVolume if AI navigation is required."), IssueCounter);
+		AddAuditIssue(
+			Issues,
+			TEXT("current_level"),
+			TEXT("warning"),
+			TEXT("missing_navmesh_in_ai_map"),
+			TEXT("level"),
+			World->GetMapName(), TEXT("Likely AI actors were found but no NavMeshBoundsVolume was detected."), TEXT("Add a NavMeshBoundsVolume if AI navigation is required."), IssueCounter
+		);
 	}
 
 	TSharedPtr<FJsonObject> Result = MakeShared<FJsonObject>();
@@ -1279,7 +1293,17 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleAuditSelectedActo
 
 	if (ActorValues.IsEmpty())
 	{
-		AddAuditIssue(Issues, TEXT("selected_actors"), TEXT("info"), TEXT("no_selected_actors"), TEXT("selection"), TEXT("Editor selection"), TEXT("No actors are selected for selected-actor audit."), TEXT("Select one or more actors, then run the selected actor audit again."), IssueCounter);
+		AddAuditIssue(
+			Issues,
+			TEXT("selected_actors"),
+			TEXT("info"),
+			TEXT("no_selected_actors"),
+			TEXT("selection"),
+			TEXT("Editor selection"),
+			TEXT("No actors are selected for selected-actor audit."),
+			TEXT("Select one or more actors, then run the selected actor audit again."),
+			IssueCounter
+		);
 	}
 
 	TSharedPtr<FJsonObject> Result = MakeShared<FJsonObject>();
@@ -1339,15 +1363,45 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleAuditBlueprints(c
 
 		if (!Blueprint)
 		{
-			AddAuditIssue(Issues, TEXT("blueprints"), TEXT("warning"), TEXT("missing_reference_or_load_failed"), TEXT("asset"), Asset.GetObjectPathString(), TEXT("Blueprint asset could not be loaded for read-only inspection."), TEXT("Open the Blueprint in Unreal and resolve missing references or load errors."), IssueCounter);
+			AddAuditIssue(
+				Issues,
+				TEXT("blueprints"),
+				TEXT("warning"),
+				TEXT("missing_reference_or_load_failed"),
+				TEXT("asset"),
+				Asset.GetObjectPathString(),
+				TEXT("Blueprint asset could not be loaded for read-only inspection."),
+				TEXT("Open the Blueprint in Unreal and resolve missing references or load errors."),
+				IssueCounter
+			);
 		}
 		else if (Status == TEXT("error"))
 		{
-			AddAuditIssue(Issues, TEXT("blueprints"), TEXT("error"), TEXT("blueprint_compile_error"), TEXT("asset"), Asset.GetObjectPathString(), TEXT("Blueprint reports a compile error."), TEXT("Open the Blueprint compiler results and fix the reported graph or reference errors."), IssueCounter);
+			AddAuditIssue(
+				Issues,
+				TEXT("blueprints"),
+				TEXT("error"),
+				TEXT("blueprint_compile_error"),
+				TEXT("asset"),
+				Asset.GetObjectPathString(),
+				TEXT("Blueprint reports a compile error."),
+				TEXT("Open the Blueprint compiler results and fix the reported graph or reference errors."),
+				IssueCounter
+			);
 		}
 		else if (Status == TEXT("dirty") || Status == TEXT("unknown"))
 		{
-			AddAuditIssue(Issues, TEXT("blueprints"), TEXT("info"), TEXT("blueprint_compile_status_uncertain"), TEXT("asset"), Asset.GetObjectPathString(), TEXT("Blueprint compile status is dirty or unknown."), TEXT("Compile the Blueprint to confirm whether issues exist."), IssueCounter);
+			AddAuditIssue(
+				Issues,
+				TEXT("blueprints"),
+				TEXT("info"),
+				TEXT("blueprint_compile_status_uncertain"),
+				TEXT("asset"),
+				Asset.GetObjectPathString(),
+				TEXT("Blueprint compile status is dirty or unknown."),
+				TEXT("Compile the Blueprint to confirm whether issues exist."),
+				IssueCounter
+			);
 		}
 	}
 
@@ -1399,7 +1453,17 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleAuditAssets(const
 		if (!PackagePath.StartsWith(TEXT("/Game/RevoltGenerated")) &&
 			(AssetName.StartsWith(TEXT("Revolt")) || ObjectPath.Contains(TEXT("RevoltGenerated"))))
 		{
-			AddAuditIssue(Issues, TEXT("assets"), TEXT("warning"), TEXT("generated_asset_outside_generated_root"), TEXT("asset"), ObjectPath, TEXT("Asset appears to be generated content outside /Game/RevoltGenerated."), TEXT("Move future generated assets under /Game/RevoltGenerated; review this asset manually before changing it."), IssueCounter);
+			AddAuditIssue(
+				Issues,
+				TEXT("assets"),
+				TEXT("warning"),
+				TEXT("generated_asset_outside_generated_root"),
+				TEXT("asset"),
+				ObjectPath,
+				TEXT("Asset appears to be generated content outside /Game/RevoltGenerated."),
+				TEXT("Move future generated assets under /Game/RevoltGenerated; review this asset manually before changing it."),
+				IssueCounter
+			);
 		}
 
 		if (ClassName.Contains(TEXT("MaterialInstance"), ESearchCase::IgnoreCase))
@@ -1407,7 +1471,17 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleAuditAssets(const
 			UMaterialInstance* MaterialInstance = Cast<UMaterialInstance>(Asset.GetAsset());
 			if (MaterialInstance && !MaterialInstance->Parent)
 			{
-				AddAuditIssue(Issues, TEXT("assets"), TEXT("warning"), TEXT("material_missing_parent"), TEXT("asset"), ObjectPath, TEXT("Material instance has no parent material assigned."), TEXT("Assign a valid parent material or recreate the generated material instance."), IssueCounter);
+				AddAuditIssue(
+					Issues,
+					TEXT("assets"),
+					TEXT("warning"),
+					TEXT("material_missing_parent"),
+					TEXT("asset"),
+					ObjectPath,
+					TEXT("Material instance has no parent material assigned."),
+					TEXT("Assign a valid parent material or recreate the generated material instance."),
+					IssueCounter
+				);
 			}
 		}
 	}
@@ -1472,7 +1546,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleAuditGeneratedCon
 			}
 			else if (bHasBiomeTag)
 			{
-				AddAuditIssue(Issues, TEXT("generated_content"), TEXT("warning"), TEXT("generated_actor_missing_tag"), TEXT("actor"), Actor->GetPathName(), TEXT("Actor has a Revolt biome tag but is missing Revolt.Generated."), TEXT("Review whether this actor is generated content before adding tags or baking."), IssueCounter);
+				AddAuditIssue(
+					Issues,
+					TEXT("generated_content"),
+					TEXT("warning"),
+					TEXT("generated_actor_missing_tag"),
+					TEXT("actor"),
+					Actor->GetPathName(), TEXT("Actor has a Revolt biome tag but is missing Revolt.Generated."), TEXT("Review whether this actor is generated content before adding tags or baking."), IssueCounter
+				);
 			}
 		}
 	}
@@ -1658,7 +1739,15 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleMutationCommand(c
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::ApplyMutationCommand(const FString& Command, const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::ApplyMutationCommand(
+	const FString& Command,
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	if (Command == TEXT("set_actor_transform"))
 	{
@@ -2059,7 +2148,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleSpawnActor(const 
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleDuplicateSelectedActors(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleDuplicateSelectedActors(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	UWorld* World = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
 	USelection* SelectedActors = GEditor ? GEditor->GetSelectedActors() : nullptr;
@@ -2124,7 +2220,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleDuplicateSelected
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleDeleteGeneratedActorsOnly(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleDeleteGeneratedActorsOnly(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	UWorld* World = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
 	if (!World)
@@ -2311,7 +2414,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateDataAsset(c
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateMaterialInstance(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateMaterialInstance(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	FString PackagePath;
 	FString AssetName;
@@ -2376,7 +2486,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateMaterialIns
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleSetMaterialInstanceParameter(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleSetMaterialInstanceParameter(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	FString AssetPath;
 	if (!Params->TryGetStringField(TEXT("asset"), AssetPath) && !Params->TryGetStringField(TEXT("asset_path"), AssetPath))
@@ -2767,7 +2884,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleAddBlueprintVaria
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleSetBlueprintDefaultValue(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleSetBlueprintDefaultValue(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	FString BlueprintPath;
 	if (!Params->TryGetStringField(TEXT("blueprint"), BlueprintPath) && !Params->TryGetStringField(TEXT("blueprint_path"), BlueprintPath))
@@ -2844,7 +2968,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleSetBlueprintDefau
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleAddComponentToBlueprint(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleAddComponentToBlueprint(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	FString BlueprintPath;
 	if (!Params->TryGetStringField(TEXT("blueprint"), BlueprintPath) && !Params->TryGetStringField(TEXT("blueprint_path"), BlueprintPath))
@@ -3247,7 +3378,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenValidate(c
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenGeneratePreview(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenGeneratePreview(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	ARevoltLandGenActor* LandGenActor = FindLandGenActorFromParams(Params, ErrorCode, ErrorMessage);
 	if (!LandGenActor)
@@ -3334,7 +3472,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenRandomizeS
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenSpawnBiomeContent(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenSpawnBiomeContent(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	ARevoltLandGenActor* LandGenActor = FindLandGenActorFromParams(Params, ErrorCode, ErrorMessage);
 	if (!LandGenActor)
@@ -3370,7 +3515,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenSpawnBiome
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenClearGeneratedContent(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenClearGeneratedContent(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	ARevoltLandGenActor* LandGenActor = FindLandGenActorFromParams(Params, ErrorCode, ErrorMessage);
 	if (!LandGenActor)
@@ -3397,7 +3549,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenClearGener
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenBakeGeneratedContent(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenBakeGeneratedContent(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	ARevoltLandGenActor* LandGenActor = FindLandGenActorFromParams(Params, ErrorCode, ErrorMessage);
 	if (!LandGenActor)
@@ -3438,7 +3597,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleLandGenGetGenerat
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateArenaShooterTemplate(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateArenaShooterTemplate(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	Target = TEXT("/Game/RevoltGenerated/Templates/ArenaShooter");
 	TArray<TSharedPtr<FJsonValue>> AssetValues;
@@ -3465,7 +3631,13 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateArenaShoote
 		FScopedTransaction Transaction(LOCTEXT("CreateArenaShooterTemplateTransaction", "Revolt Create Arena Shooter Template"));
 
 		const bool bRifleExists = StaticLoadObject(URevoltArenaWeaponData::StaticClass(), nullptr, TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Weapons/DA_Weapon_Rifle")) != nullptr;
-		URevoltArenaWeaponData* Rifle = Cast<URevoltArenaWeaponData>(CreateArenaDataAsset(TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Weapons"), TEXT("DA_Weapon_Rifle"), URevoltArenaWeaponData::StaticClass(), false, ErrorCode, ErrorMessage));
+		URevoltArenaWeaponData* Rifle = Cast<URevoltArenaWeaponData>(CreateArenaDataAsset(
+			TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Weapons"),
+			TEXT("DA_Weapon_Rifle"),
+			URevoltArenaWeaponData::StaticClass(),
+			false,
+			ErrorCode,
+			ErrorMessage));
 		if (Rifle && !bRifleExists)
 		{
 			Rifle->DisplayName = FText::FromString(TEXT("Rifle"));
@@ -3477,7 +3649,13 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateArenaShoote
 		}
 
 		const bool bShotgunExists = StaticLoadObject(URevoltArenaWeaponData::StaticClass(), nullptr, TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Weapons/DA_Weapon_Shotgun")) != nullptr;
-		URevoltArenaWeaponData* Shotgun = Cast<URevoltArenaWeaponData>(CreateArenaDataAsset(TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Weapons"), TEXT("DA_Weapon_Shotgun"), URevoltArenaWeaponData::StaticClass(), false, ErrorCode, ErrorMessage));
+		URevoltArenaWeaponData* Shotgun = Cast<URevoltArenaWeaponData>(CreateArenaDataAsset(
+			TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Weapons"),
+			TEXT("DA_Weapon_Shotgun"),
+			URevoltArenaWeaponData::StaticClass(),
+			false,
+			ErrorCode,
+			ErrorMessage));
 		if (Shotgun && !bShotgunExists)
 		{
 			Shotgun->DisplayName = FText::FromString(TEXT("Shotgun"));
@@ -3489,7 +3667,13 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateArenaShoote
 		}
 
 		const bool bBasicEnemyExists = StaticLoadObject(URevoltArenaEnemyData::StaticClass(), nullptr, TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Enemies/DA_Enemy_Basic")) != nullptr;
-		URevoltArenaEnemyData* BasicEnemy = Cast<URevoltArenaEnemyData>(CreateArenaDataAsset(TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Enemies"), TEXT("DA_Enemy_Basic"), URevoltArenaEnemyData::StaticClass(), false, ErrorCode, ErrorMessage));
+		URevoltArenaEnemyData* BasicEnemy = Cast<URevoltArenaEnemyData>(CreateArenaDataAsset(
+			TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Enemies"),
+			TEXT("DA_Enemy_Basic"),
+			URevoltArenaEnemyData::StaticClass(),
+			false,
+			ErrorCode,
+			ErrorMessage));
 		if (BasicEnemy && !bBasicEnemyExists)
 		{
 			BasicEnemy->DisplayName = FText::FromString(TEXT("Basic Enemy"));
@@ -3501,7 +3685,13 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateArenaShoote
 		}
 
 		const bool bFastEnemyExists = StaticLoadObject(URevoltArenaEnemyData::StaticClass(), nullptr, TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Enemies/DA_Enemy_Fast")) != nullptr;
-		URevoltArenaEnemyData* FastEnemy = Cast<URevoltArenaEnemyData>(CreateArenaDataAsset(TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Enemies"), TEXT("DA_Enemy_Fast"), URevoltArenaEnemyData::StaticClass(), false, ErrorCode, ErrorMessage));
+		URevoltArenaEnemyData* FastEnemy = Cast<URevoltArenaEnemyData>(CreateArenaDataAsset(
+			TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Enemies"),
+			TEXT("DA_Enemy_Fast"),
+			URevoltArenaEnemyData::StaticClass(),
+			false,
+			ErrorCode,
+			ErrorMessage));
 		if (FastEnemy && !bFastEnemyExists)
 		{
 			FastEnemy->DisplayName = FText::FromString(TEXT("Fast Enemy"));
@@ -3513,7 +3703,13 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateArenaShoote
 		}
 
 		const bool bWaveExists = StaticLoadObject(URevoltArenaWaveData::StaticClass(), nullptr, TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Waves/DA_Wave_Test")) != nullptr;
-		URevoltArenaWaveData* WaveData = Cast<URevoltArenaWaveData>(CreateArenaDataAsset(TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Waves"), TEXT("DA_Wave_Test"), URevoltArenaWaveData::StaticClass(), false, ErrorCode, ErrorMessage));
+		URevoltArenaWaveData* WaveData = Cast<URevoltArenaWaveData>(CreateArenaDataAsset(
+			TEXT("/Game/RevoltGenerated/Templates/ArenaShooter/Data/Waves"),
+			TEXT("DA_Wave_Test"),
+			URevoltArenaWaveData::StaticClass(),
+			false,
+			ErrorCode,
+			ErrorMessage));
 		if (WaveData && !bWaveExists)
 		{
 			WaveData->Waves.Empty();
@@ -3750,7 +3946,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleSpawnTestArena(co
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateZombieShooterTemplate(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateZombieShooterTemplate(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	Target = TEXT("/Game/RevoltGenerated/Templates/ZombieShooter");
 	const TArray<FString> PlannedAssets = {
@@ -3817,7 +4020,10 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateZombieShoot
 		}
 
 		const bool bShotgunExists = StaticLoadObject(URevoltArenaWeaponData::StaticClass(), nullptr, TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Weapons/DA_Weapon_ZombieShotgun")) != nullptr;
-		URevoltArenaWeaponData* Shotgun = Cast<URevoltArenaWeaponData>(CreateTemplateAsset(TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Weapons"), TEXT("DA_Weapon_ZombieShotgun"), URevoltArenaWeaponData::StaticClass()));
+		URevoltArenaWeaponData* Shotgun = Cast<URevoltArenaWeaponData>(CreateTemplateAsset(
+			TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Weapons"),
+			TEXT("DA_Weapon_ZombieShotgun"),
+			URevoltArenaWeaponData::StaticClass()));
 		if (Shotgun && !bShotgunExists)
 		{
 			Shotgun->DisplayName = FText::FromString(TEXT("Zombie Shotgun"));
@@ -3834,7 +4040,10 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateZombieShoot
 		}
 
 		const bool bShamblerExists = StaticLoadObject(URevoltZombieEnemyData::StaticClass(), nullptr, TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Zombies/DA_Zombie_Shambler")) != nullptr;
-		URevoltZombieEnemyData* Shambler = Cast<URevoltZombieEnemyData>(CreateTemplateAsset(TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Zombies"), TEXT("DA_Zombie_Shambler"), URevoltZombieEnemyData::StaticClass()));
+		URevoltZombieEnemyData* Shambler = Cast<URevoltZombieEnemyData>(CreateTemplateAsset(
+			TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Zombies"),
+			TEXT("DA_Zombie_Shambler"),
+			URevoltZombieEnemyData::StaticClass()));
 		if (Shambler && !bShamblerExists)
 		{
 			Shambler->DisplayName = FText::FromString(TEXT("Shambler"));
@@ -3889,7 +4098,10 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleCreateZombieShoot
 		}
 
 		const bool bObjectiveExists = StaticLoadObject(URevoltZombieObjectiveData::StaticClass(), nullptr, TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Objectives/DA_Objective_Extract")) != nullptr;
-		URevoltZombieObjectiveData* Objective = Cast<URevoltZombieObjectiveData>(CreateTemplateAsset(TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Objectives"), TEXT("DA_Objective_Extract"), URevoltZombieObjectiveData::StaticClass()));
+		URevoltZombieObjectiveData* Objective = Cast<URevoltZombieObjectiveData>(CreateTemplateAsset(
+			TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Objectives"),
+			TEXT("DA_Objective_Extract"),
+			URevoltZombieObjectiveData::StaticClass()));
 		if (Objective && !bObjectiveExists)
 		{
 			Objective->ObjectiveText = FText::FromString(TEXT("Survive the horde and reach extraction"));
@@ -4008,7 +4220,14 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleConfigureZombieDa
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleConfigureWeaponRecoil(const TSharedPtr<FJsonObject>& Params, bool bDryRun, FString& Target, FString& ResultSummary, FString& ErrorCode, FString& ErrorMessage)
+TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleConfigureWeaponRecoil(
+	const TSharedPtr<FJsonObject>& Params,
+	bool bDryRun,
+	FString& Target,
+	FString& ResultSummary,
+	FString& ErrorCode,
+	FString& ErrorMessage
+)
 {
 	FString AssetPath;
 	if (!Params->TryGetStringField(TEXT("asset_path"), AssetPath) && !Params->TryGetStringField(TEXT("asset"), AssetPath))
@@ -4112,7 +4331,10 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleSpawnZombieTestAr
 		ARevoltZombieObjectiveActor* Objective = World->SpawnActor<ARevoltZombieObjectiveActor>(ARevoltZombieObjectiveActor::StaticClass(), BaseLocation + FVector(-600.0f, 0.0f, 0.0f), FRotator::ZeroRotator);
 
 		URevoltZombieWaveData* WaveData = Cast<URevoltZombieWaveData>(StaticLoadObject(URevoltZombieWaveData::StaticClass(), nullptr, TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Waves/DA_Zombie_Wave_Test")));
-		URevoltZombieObjectiveData* ObjectiveData = Cast<URevoltZombieObjectiveData>(StaticLoadObject(URevoltZombieObjectiveData::StaticClass(), nullptr, TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Objectives/DA_Objective_Extract")));
+		URevoltZombieObjectiveData* ObjectiveData = Cast<URevoltZombieObjectiveData>(StaticLoadObject(
+			URevoltZombieObjectiveData::StaticClass(),
+			nullptr,
+			TEXT("/Game/RevoltGenerated/Templates/ZombieShooter/Data/Objectives/DA_Objective_Extract")));
 		if (WaveSpawner)
 		{
 			WaveSpawner->WaveData = WaveData;
@@ -4602,7 +4824,14 @@ bool FRevoltEditorBridgeEditorModule::NormalizeGeneratedPackagePath(const FStrin
 	return true;
 }
 
-bool FRevoltEditorBridgeEditorModule::NormalizeGeneratedAssetPath(const TSharedPtr<FJsonObject>& Params, FString& OutPackagePath, FString& OutAssetName, FString& OutAssetPath, FString& ErrorCode, FString& ErrorMessage) const
+bool FRevoltEditorBridgeEditorModule::NormalizeGeneratedAssetPath(
+	const TSharedPtr<FJsonObject>& Params,
+	FString& OutPackagePath,
+	FString& OutAssetName,
+	FString& OutAssetPath,
+	FString& ErrorCode,
+	FString& ErrorMessage
+) const
 {
 	FString AssetPath;
 	if (Params->TryGetStringField(TEXT("asset_path"), AssetPath) || Params->TryGetStringField(TEXT("asset"), AssetPath))
@@ -4697,7 +4926,14 @@ bool FRevoltEditorBridgeEditorModule::IsGeneratedBiomeAssetPath(const FString& A
 	return NormalizedPath == TEXT("/Game/RevoltGenerated/Biomes") || NormalizedPath.StartsWith(TEXT("/Game/RevoltGenerated/Biomes/"));
 }
 
-bool FRevoltEditorBridgeEditorModule::NormalizeGeneratedBiomeAssetPath(const TSharedPtr<FJsonObject>& Params, FString& OutPackagePath, FString& OutAssetName, FString& OutAssetPath, FString& ErrorCode, FString& ErrorMessage) const
+bool FRevoltEditorBridgeEditorModule::NormalizeGeneratedBiomeAssetPath(
+	const TSharedPtr<FJsonObject>& Params,
+	FString& OutPackagePath,
+	FString& OutAssetName,
+	FString& OutAssetPath,
+	FString& ErrorCode,
+	FString& ErrorMessage
+) const
 {
 	if (!NormalizeGeneratedAssetPath(Params, OutPackagePath, OutAssetName, OutAssetPath, ErrorCode, ErrorMessage))
 	{
@@ -4831,7 +5067,16 @@ UObject* FRevoltEditorBridgeEditorModule::LoadAssetForMutation(const FString& As
 	return Asset;
 }
 
-bool FRevoltEditorBridgeEditorModule::ApplyEditablePropertyValue(UObject* Object, const FString& PropertyName, const TSharedPtr<FJsonValue>& Value, FString& BeforeValue, FString& AfterValue, bool bDryRun, FString& ErrorCode, FString& ErrorMessage) const
+bool FRevoltEditorBridgeEditorModule::ApplyEditablePropertyValue(
+	UObject* Object,
+	const FString& PropertyName,
+	const TSharedPtr<FJsonValue>& Value,
+	FString& BeforeValue,
+	FString& AfterValue,
+	bool bDryRun,
+	FString& ErrorCode,
+	FString& ErrorMessage
+) const
 {
 	if (!Object)
 	{
@@ -4917,7 +5162,14 @@ bool FRevoltEditorBridgeEditorModule::SavePackageForAsset(UObject* Asset, FStrin
 	return true;
 }
 
-bool FRevoltEditorBridgeEditorModule::NormalizeGeneratedBlueprintAssetPath(const TSharedPtr<FJsonObject>& Params, FString& OutPackagePath, FString& OutAssetName, FString& OutAssetPath, FString& ErrorCode, FString& ErrorMessage) const
+bool FRevoltEditorBridgeEditorModule::NormalizeGeneratedBlueprintAssetPath(
+	const TSharedPtr<FJsonObject>& Params,
+	FString& OutPackagePath,
+	FString& OutAssetName,
+	FString& OutAssetPath,
+	FString& ErrorCode,
+	FString& ErrorMessage
+) const
 {
 	if (!NormalizeGeneratedAssetPath(Params, OutPackagePath, OutAssetName, OutAssetPath, ErrorCode, ErrorMessage))
 	{
@@ -5134,7 +5386,17 @@ FString FRevoltEditorBridgeEditorModule::GetBlueprintCompileStatusString(const U
 	}
 }
 
-void FRevoltEditorBridgeEditorModule::AddAuditIssue(TArray<TSharedPtr<FJsonValue>>& Issues, const FString& Source, const FString& Severity, const FString& Code, const FString& AffectedType, const FString& Affected, const FString& Message, const FString& RecommendedFix, int32& IssueCounter) const
+void FRevoltEditorBridgeEditorModule::AddAuditIssue(
+	TArray<TSharedPtr<FJsonValue>>& Issues,
+	const FString& Source,
+	const FString& Severity,
+	const FString& Code,
+	const FString& AffectedType,
+	const FString& Affected,
+	const FString& Message,
+	const FString& RecommendedFix,
+	int32& IssueCounter
+) const
 {
 	const FString SeverityDisplay = Severity.Equals(TEXT("error"), ESearchCase::IgnoreCase) ? TEXT("Error")
 		: Severity.Equals(TEXT("warning"), ESearchCase::IgnoreCase) ? TEXT("Warning")
@@ -5301,7 +5563,14 @@ void FRevoltEditorBridgeEditorModule::AddActorAuditIssues(AActor* Actor, TArray<
 	}
 	if (bHasBiomeTag && !bHasGeneratedTag)
 	{
-		AddAuditIssue(Issues, Source, TEXT("warning"), TEXT("generated_actor_missing_tag"), TEXT("actor"), Actor->GetPathName(), TEXT("Actor has a Revolt biome tag but is missing Revolt.Generated."), TEXT("Review whether this actor is generated content before adding tags or baking."), IssueCounter);
+		AddAuditIssue(
+			Issues,
+			Source,
+			TEXT("warning"),
+			TEXT("generated_actor_missing_tag"),
+			TEXT("actor"),
+			Actor->GetPathName(), TEXT("Actor has a Revolt biome tag but is missing Revolt.Generated."), TEXT("Review whether this actor is generated content before adding tags or baking."), IssueCounter
+		);
 	}
 
 	TArray<UStaticMeshComponent*> StaticMeshComponents;
@@ -5315,11 +5584,25 @@ void FRevoltEditorBridgeEditorModule::AddActorAuditIssues(AActor* Actor, TArray<
 
 		if (!StaticMeshComponent->GetStaticMesh())
 		{
-			AddAuditIssue(Issues, Source, TEXT("warning"), TEXT("actor_missing_static_mesh"), TEXT("actor"), Actor->GetPathName(), TEXT("Actor has a StaticMeshComponent with no Static Mesh assigned."), TEXT("Assign a mesh or remove the empty StaticMeshComponent."), IssueCounter);
+			AddAuditIssue(
+				Issues,
+				Source,
+				TEXT("warning"),
+				TEXT("actor_missing_static_mesh"),
+				TEXT("actor"),
+				Actor->GetPathName(), TEXT("Actor has a StaticMeshComponent with no Static Mesh assigned."), TEXT("Assign a mesh or remove the empty StaticMeshComponent."), IssueCounter
+			);
 		}
 		else if (StaticMeshComponent->GetCollisionEnabled() == ECollisionEnabled::NoCollision && (Actor->ActorHasTag(TEXT("Revolt.Generated")) || Actor->GetClass()->GetName().Contains(TEXT("StaticMesh"))))
 		{
-			AddAuditIssue(Issues, Source, TEXT("info"), TEXT("empty_collision_on_important_actor"), TEXT("actor"), Actor->GetPathName(), TEXT("Static mesh actor has collision disabled."), TEXT("Enable collision if this actor should block players, traces, or AI."), IssueCounter);
+			AddAuditIssue(
+				Issues,
+				Source,
+				TEXT("info"),
+				TEXT("empty_collision_on_important_actor"),
+				TEXT("actor"),
+				Actor->GetPathName(), TEXT("Static mesh actor has collision disabled."), TEXT("Enable collision if this actor should block players, traces, or AI."), IssueCounter
+			);
 		}
 	}
 
@@ -5329,7 +5612,14 @@ void FRevoltEditorBridgeEditorModule::AddActorAuditIssues(AActor* Actor, TArray<
 	{
 		if (LightComponent && LightComponent->Intensity > 100000.0f)
 		{
-			AddAuditIssue(Issues, Source, TEXT("warning"), TEXT("extreme_light_intensity"), TEXT("actor"), Actor->GetPathName(), TEXT("Light intensity is unusually high."), TEXT("Review intensity units and lower the value if lighting or exposure is unstable."), IssueCounter);
+			AddAuditIssue(
+				Issues,
+				Source,
+				TEXT("warning"),
+				TEXT("extreme_light_intensity"),
+				TEXT("actor"),
+				Actor->GetPathName(), TEXT("Light intensity is unusually high."), TEXT("Review intensity units and lower the value if lighting or exposure is unstable."), IssueCounter
+			);
 		}
 	}
 
@@ -5342,7 +5632,14 @@ void FRevoltEditorBridgeEditorModule::AddActorAuditIssues(AActor* Actor, TArray<
 			FNumericProperty* MaxParticlesProperty = CastField<FNumericProperty>(Component->GetClass()->FindPropertyByName(TEXT("MaxSimultaneousParticles")));
 			if (MaxParticlesProperty && MaxParticlesProperty->GetFloatingPointPropertyValue(MaxParticlesProperty->ContainerPtrToValuePtr<void>(Component)) > 100000.0)
 			{
-				AddAuditIssue(Issues, Source, TEXT("warning"), TEXT("suspicious_niagara_spawn_rate"), TEXT("actor"), Actor->GetPathName(), TEXT("Niagara component reports an unusually high particle limit."), TEXT("Review Niagara spawn rates and particle limits for performance."), IssueCounter);
+				AddAuditIssue(
+					Issues,
+					Source,
+					TEXT("warning"),
+					TEXT("suspicious_niagara_spawn_rate"),
+					TEXT("actor"),
+					Actor->GetPathName(), TEXT("Niagara component reports an unusually high particle limit."), TEXT("Review Niagara spawn rates and particle limits for performance."), IssueCounter
+				);
 			}
 		}
 	}
@@ -5510,7 +5807,14 @@ bool FRevoltEditorBridgeEditorModule::CompileBlueprintAndValidate(UBlueprint* Bl
 	return true;
 }
 
-TArray<TSharedPtr<FJsonObject>> FRevoltEditorBridgeEditorModule::BuildDryRunDiff(const FString& RequestId, const FString& Command, const TSharedPtr<FJsonObject>& Params, const TSharedPtr<FJsonObject>& Preview, const FString& Target, FString& OutRiskLevel) const
+TArray<TSharedPtr<FJsonObject>> FRevoltEditorBridgeEditorModule::BuildDryRunDiff(
+	const FString& RequestId,
+	const FString& Command,
+	const TSharedPtr<FJsonObject>& Params,
+	const TSharedPtr<FJsonObject>& Preview,
+	const FString& Target,
+	FString& OutRiskLevel
+) const
 {
 	TArray<TSharedPtr<FJsonObject>> Diff;
 	if (!Preview.IsValid())

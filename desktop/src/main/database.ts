@@ -47,7 +47,7 @@ export class RuntimeDatabase {
 
   getSettings(): RuntimeSettings {
     const settings = { ...defaultSettings };
-    const rows = this.query<{ key: string; value_json: string }>("SELECT key, value_json FROM settings");
+    const rows = this.query<{ key: string; value_json: string; }>("SELECT key, value_json FROM settings");
     for (const row of rows) {
       if (row.key in settings) {
         try {
@@ -181,7 +181,10 @@ export class RuntimeDatabase {
       created_at: string;
       updated_at: string;
     }>(
-      "SELECT id, provider_type, display_name, base_url, model_name, context_length, temperature, max_output_tokens, classification, supports_streaming, supports_tools, enabled, last_tested_at, last_test_status, created_at, updated_at FROM model_profiles ORDER BY display_name ASC"
+      "SELECT id, provider_type, display_name, base_url, model_name, context_length, temperature, " +
+      "max_output_tokens, classification, supports_streaming, supports_tools, enabled, " +
+      "last_tested_at, last_test_status, created_at, updated_at FROM model_profiles " +
+      "ORDER BY display_name ASC"
     ).map((row) => ({
       id: row.id,
       providerType: row.provider_type as ModelProfile["providerType"],
@@ -333,7 +336,7 @@ export class RuntimeDatabase {
     this.save();
   }
 
-  addIndexedFile(input: Omit<IndexedFileRecord, "id" | "indexedAt">, chunks: Array<{ chunkIndex: number; content: string; summary: string; tokenEstimate: number }>): void {
+  addIndexedFile(input: Omit<IndexedFileRecord, "id" | "indexedAt">, chunks: Array<{ chunkIndex: number; content: string; summary: string; tokenEstimate: number; }>): void {
     const fileId = randomUUID();
     const indexedAt = new Date().toISOString();
     this.execute(
@@ -384,9 +387,9 @@ export class RuntimeDatabase {
   }
 
   getIndexStats(isRunning = false): IndexStats {
-    const fileCount = this.query<{ count: number }>("SELECT COUNT(*) AS count FROM indexed_files")[0]?.count ?? 0;
-    const assetCount = this.query<{ count: number }>("SELECT COUNT(*) AS count FROM asset_summaries")[0]?.count ?? 0;
-    const sceneCount = this.query<{ count: number }>("SELECT COUNT(*) AS count FROM scene_summaries")[0]?.count ?? 0;
+    const fileCount = this.query<{ count: number; }>("SELECT COUNT(*) AS count FROM indexed_files")[0]?.count ?? 0;
+    const assetCount = this.query<{ count: number; }>("SELECT COUNT(*) AS count FROM asset_summaries")[0]?.count ?? 0;
+    const sceneCount = this.query<{ count: number; }>("SELECT COUNT(*) AS count FROM scene_summaries")[0]?.count ?? 0;
     const latestRun = this.query<{
       finished_at: string;
       started_at: string;
@@ -424,7 +427,7 @@ export class RuntimeDatabase {
   }
 
   getLatestPrototypeWizardPlan(): GamePrototypePlan | undefined {
-    const row = this.query<{ plan_json: string }>("SELECT plan_json FROM prototype_wizard_plans ORDER BY created_at DESC LIMIT 1")[0];
+    const row = this.query<{ plan_json: string; }>("SELECT plan_json FROM prototype_wizard_plans ORDER BY created_at DESC LIMIT 1")[0];
     return row ? (JSON.parse(row.plan_json) as GamePrototypePlan) : undefined;
   }
 
@@ -676,7 +679,7 @@ export class RuntimeDatabase {
   }
 
   private seedDefaults(): void {
-    const count = this.query<{ count: number }>("SELECT COUNT(*) AS count FROM settings")[0]?.count ?? 0;
+    const count = this.query<{ count: number; }>("SELECT COUNT(*) AS count FROM settings")[0]?.count ?? 0;
     if (count > 0) {
       return;
     }
@@ -731,7 +734,7 @@ export class RuntimeDatabase {
   }
 
   private addColumnIfMissing(tableName: string, columnName: string, definition: string): void {
-    const columns = this.query<{ name: string }>(`PRAGMA table_info(${tableName})`);
+    const columns = this.query<{ name: string; }>(`PRAGMA table_info(${tableName})`);
     if (!columns.some((column) => column.name === columnName)) {
       this.execute(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definition}`);
     }
@@ -795,7 +798,7 @@ export class RuntimeDatabase {
   }
 }
 
-function defaultCapabilitiesForProvider(providerType: ModelProviderType): { supportsStreaming: boolean; supportsTools: boolean } {
+function defaultCapabilitiesForProvider(providerType: ModelProviderType): { supportsStreaming: boolean; supportsTools: boolean; } {
   return {
     supportsStreaming: providerType !== "openai-compatible",
     supportsTools: false

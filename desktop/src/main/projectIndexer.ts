@@ -21,7 +21,7 @@ export class ProjectIndexer {
   private running = false;
   private stopRequested = false;
 
-  constructor(private readonly database: RuntimeDatabase) {}
+  constructor(private readonly database: RuntimeDatabase) { }
 
   isRunning(): boolean {
     return this.running;

@@ -33,7 +33,7 @@ export function buildPlayableLevelWorkflow(openLevelSummary: unknown, auditResul
   };
 }
 
-function buildFixPlan(summary: PlayableLevelSummary, context: { hasAiActors: boolean; hasGameMode: boolean; hasCamera: boolean; hasPlayablePawn: boolean }): PlayableFixItem[] {
+function buildFixPlan(summary: PlayableLevelSummary, context: { hasAiActors: boolean; hasGameMode: boolean; hasCamera: boolean; hasPlayablePawn: boolean; }): PlayableFixItem[] {
   const fixes: PlayableFixItem[] = [];
   if (summary.playerCanSpawn === "No") {
     fixes.push({
@@ -152,10 +152,10 @@ function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
-function vectorObject(value: [number, number, number]): { x: number; y: number; z: number } {
+function vectorObject(value: [number, number, number]): { x: number; y: number; z: number; } {
   return { x: value[0], y: value[1], z: value[2] };
 }
 
-function rotatorObject(value: [number, number, number]): { pitch: number; yaw: number; roll: number } {
+function rotatorObject(value: [number, number, number]): { pitch: number; yaw: number; roll: number; } {
   return { pitch: value[0], yaw: value[1], roll: value[2] };
 }

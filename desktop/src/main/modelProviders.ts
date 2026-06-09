@@ -134,7 +134,7 @@ async function completeOllama(profile: ModelProfile, request: CompletionRequest)
 }
 
 async function completeOpenAiCompatible(profile: ModelProfile, request: CompletionRequest): Promise<CompletionResponse> {
-  const json = await postJson<{ choices?: Array<{ message?: { content?: string }; finish_reason?: string }> }>(`${profile.baseUrl}/v1/chat/completions`, {
+  const json = await postJson<{ choices?: Array<{ message?: { content?: string; }; finish_reason?: string; }>; }>(`${profile.baseUrl}/v1/chat/completions`, {
     model: request.model,
     messages: [
       ...(request.systemPrompt ? [{ role: "system", content: request.systemPrompt }] : []),
@@ -206,14 +206,14 @@ function parseLocalUrl(url: string): URL {
 
 async function fetchModelList(providerType: ModelProviderType, baseUrl: string): Promise<string[]> {
   if (providerType === "ollama") {
-    const json = await getJson<{ models?: Array<{ name?: string }> }>(`${baseUrl}/api/tags`);
+    const json = await getJson<{ models?: Array<{ name?: string; }>; }>(`${baseUrl}/api/tags`);
     if (!Array.isArray(json.models)) {
       throw new Error("Invalid response format from Ollama model list.");
     }
     return json.models.map((model) => model.name).filter((name): name is string => typeof name === "string" && name.length > 0);
   }
 
-  const json = await getJson<{ data?: Array<{ id?: string }> }>(`${baseUrl}/v1/models`);
+  const json = await getJson<{ data?: Array<{ id?: string; }>; }>(`${baseUrl}/v1/models`);
   if (!Array.isArray(json.data)) {
     throw new Error("Invalid response format from local OpenAI-compatible model list.");
   }

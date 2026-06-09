@@ -16,5 +16,5 @@ declare module "sql.js" {
     Database: typeof Database;
   }
 
-  export default function initSqlJs(options?: { locateFile?: (fileName: string) => string }): Promise<SqlJsStatic>;
+  export default function initSqlJs(options?: { locateFile?: (fileName: string) => string; }): Promise<SqlJsStatic>;
 }
