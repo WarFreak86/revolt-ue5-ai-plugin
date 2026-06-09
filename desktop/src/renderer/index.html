@@ -131,8 +131,23 @@
         </div>
         <div class="panel">
           <h3>Guided Result</h3>
+          <div class="beginner-intent-box">
+            <label>
+              Tell Revolt what you want to do
+              <input id="beginnerIntentInput" placeholder="Example: make a map" />
+            </label>
+            <div class="button-row">
+              <button id="beginner-create-plan" class="primary">Create Dry-Run Plan</button>
+              <button id="beginner-clear-plan">Clear Plan</button>
+            </div>
+          </div>
           <button id="beginner-connect-unreal" class="primary">Connect to Unreal</button>
           <p id="beginner-action-result" class="message">Pick an action above. Nothing runs automatically from this dashboard.</p>
+          <div id="beginner-workflow-plan" class="beginner-workflow-plan" hidden></div>
+          <div class="button-row">
+            <button id="beginner-approve-execute" class="primary" disabled>Approve and Create Map</button>
+          </div>
+          <pre id="beginner-workflow-technical" hidden>{}</pre>
         </div>
       </section>
 

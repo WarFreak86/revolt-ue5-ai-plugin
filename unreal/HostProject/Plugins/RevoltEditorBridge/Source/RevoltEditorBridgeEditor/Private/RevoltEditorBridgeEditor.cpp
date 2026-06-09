@@ -3736,10 +3736,12 @@ TSharedPtr<FJsonObject> FRevoltEditorBridgeEditorModule::HandleSpawnTestArena(co
 		}
 		if (Pickup)
 		{
+			Pickup->Tags.AddUnique(TEXT("Revolt.Generated"));
 			Pickup->Tags.AddUnique(TEXT("Revolt.Template.ArenaShooter"));
 		}
 		if (Objective)
 		{
+			Objective->Tags.AddUnique(TEXT("Revolt.Generated"));
 			Objective->Tags.AddUnique(TEXT("Revolt.Template.ArenaShooter"));
 		}
 	}

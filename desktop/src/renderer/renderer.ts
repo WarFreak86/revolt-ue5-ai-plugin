@@ -73,9 +73,26 @@ let state: DesktopAppState = createDefaultDesktopAppState();
 let selectedRecipeId = "";
 let selectedPlayableFixId = "";
 let connectionStepIndex = 0;
+let beginnerWorkflowPlan: BeginnerWorkflowPlan | null = null;
+
+interface BeginnerWorkflowPlan {
+  id: string;
+  intent: string;
+  title: string;
+  beginnerSummary: string;
+  command: string;
+  dryRunParams: Record<string, unknown>;
+  approvedParams: Record<string, unknown>;
+  plannedChanges: string[];
+  riskLevel: "Low" | "Medium" | "High" | "Dangerous";
+  permissionLevel: string;
+  status: "planned" | "dry_run_ready" | "dry_run_failed" | "applying" | "applied" | "failed";
+  dryRunResult: ManualCommandResult | null;
+  executionResult: ManualCommandResult | null;
+  nextSteps: string[];
+}
 
 installRendererErrorBoundary();
-installSafeEventDispatch();
 
 const pages = document.querySelectorAll<HTMLElement>(".page");
 const navButtons = document.querySelectorAll<HTMLButtonElement>(".nav");
@@ -234,6 +251,7 @@ function renderAll(): void {
   renderRecipeRuns();
   renderSelectedRecipe();
   renderConnectionWizard();
+  renderBeginnerWorkflowPlan();
 }
 
 function renderBeginnerDashboard(): void {
@@ -332,7 +350,7 @@ function renderConnectionWizard(): void {
           </ol>
         `;
       } else if (action === "test") {
-        await testConnectionFromWizard();
+        await runUnrealConnectionTest("connect-unreal-wizard");
       }
     });
   }
@@ -352,46 +370,83 @@ function connectionStatusCard(): StatusCard {
   return { state: "unknown", label: "Not Connected", detail: "Open Unreal → Tools → Revolt Bridge → Start Bridge → Test Connection." };
 }
 
-async function testConnectionFromWizard(): Promise<void> {
+async function runUnrealConnectionTest(source: string): Promise<void> {
+  const resultElement = document.getElementById("connection-result-message");
   state.connectionState.unreal = { ...state.connectionState.unreal, status: "checking", lastError: null };
   renderConnectionWizard();
-  const response = await window.revoltRuntime.testDefaultUnrealConnection();
-  applyUnrealConnectionResult(response.result);
-  state.history = safeArray(response.history);
-  if (response.result?.ok) {
-    requireElement("connection-result-message").innerHTML = `
-      <strong>Connected to Unreal</strong><br />
-      You are ready to use Manual Command Mode or AI-assisted tools.
-      <div class="button-row">
-        <button id="connection-open-manual">Open Manual Command Mode</button>
-        <button id="connection-go-dashboard">Go to Dashboard</button>
-        <button id="connection-run-first-test" class="primary">Run First Test</button>
-      </div>
-    `;
-    requireElement("connection-open-manual").addEventListener("click", () => showPage("manual"));
-    requireElement("connection-go-dashboard").addEventListener("click", () => showPage("dashboard"));
-    requireElement("connection-run-first-test").addEventListener("click", runFirstUnrealConnectionTest);
-  } else {
-    requireElement("connection-result-message").innerHTML = `
-      <strong>${escapeHtml(response.result?.message ?? "The desktop app could not reach Unreal.")}</strong><br />
-      ${escapeHtml(response.result?.detail ?? "Most likely, Unreal is not open or Start Bridge has not been clicked.")}
-      <ol>
-        <li>Open your Unreal project.</li>
-        <li>Go to Tools → Revolt Bridge.</li>
-        <li>Click Start Bridge.</li>
-        <li>Come back here and click Test Connection again.</li>
-      </ol>
-      <div class="button-row">
-        <button id="connection-try-again" class="primary">Try Again</button>
-        <button id="connection-show-advanced">Show Advanced Details</button>
-      </div>
-    `;
-    requireElement("connection-try-again").addEventListener("click", testConnectionFromWizard);
-    requireElement("connection-show-advanced").addEventListener("click", () => {
-      requireElement("connection-advanced-output").scrollIntoView({ behavior: "smooth" });
-    });
+
+  try {
+    const response = await window.revoltRuntime.testDefaultUnrealConnection();
+    applyUnrealConnectionResult(response.result);
+    state.history = safeArray(response.history);
+
+    if (response.result?.ok) {
+      if (resultElement) {
+        resultElement.innerHTML = `
+          <strong>Connected to Unreal</strong><br />
+          You are ready to use Manual Command Mode or AI-assisted tools.
+          <div class="button-row">
+            <button id="connection-open-manual">Open Manual Command Mode</button>
+            <button id="connection-go-dashboard">Go to Dashboard</button>
+            <button id="connection-run-first-test" class="primary">Run First Test</button>
+          </div>
+        `;
+        requireElement("connection-open-manual").addEventListener("click", () => showPage("manual"));
+        requireElement("connection-go-dashboard").addEventListener("click", () => showPage("dashboard"));
+        requireElement("connection-run-first-test").addEventListener("click", () => {
+          void runFirstUnrealConnectionTest();
+        });
+      }
+      notify(`Unreal connection test succeeded from ${source}.`, "info");
+    } else {
+      const message = response.result?.message ?? "The desktop app could not reach Unreal.";
+      const detail = response.result?.detail ?? "Most likely, Unreal is not open or Start Bridge has not been clicked.";
+      if (resultElement) {
+        resultElement.innerHTML = unrealConnectionFailureHtml(message, detail);
+        requireElement("connection-try-again").addEventListener("click", () => {
+          void runUnrealConnectionTest("connect-unreal-retry");
+        });
+        requireElement("connection-show-advanced").addEventListener("click", () => {
+          requireElement("connection-advanced-output").scrollIntoView({ behavior: "smooth" });
+        });
+      }
+      notify(`${message} ${detail}`, "warning");
+    }
+  } catch (error) {
+    const message = errorMessage(error, "Unreal connection test failed before it could reach the local bridge.");
+    state.unrealStatus = { state: "offline", label: "Unreal Test Failed", detail: message };
+    state.connectionState.unreal = {
+      ...state.connectionState.unreal,
+      status: "error",
+      endpoint: `http://${state.settings.ueBridgeHost}:${state.settings.ueBridgePort}`,
+      lastCheckedAt: new Date().toISOString(),
+      lastError: message
+    };
+    if (resultElement) {
+      resultElement.innerHTML = unrealConnectionFailureHtml("Unreal connection test failed.", message);
+    }
+    notify(`Unreal connection test failed from ${source}: ${message}`, "error");
+  } finally {
+    renderAll();
   }
-  renderConnectionWizard();
+}
+
+function unrealConnectionFailureHtml(message: string, detail: string): string {
+  return `
+    <strong>${escapeHtml(message)}</strong><br />
+    ${escapeHtml(detail)}
+    <ol>
+      <li>Open your Unreal project.</li>
+      <li>Go to Tools → Revolt Bridge.</li>
+      <li>Click Start Bridge.</li>
+      <li>Confirm the endpoint is http://127.0.0.1:8765.</li>
+      <li>Come back here and click Test Connection again.</li>
+    </ol>
+    <div class="button-row">
+      <button id="connection-try-again" class="primary">Try Again</button>
+      <button id="connection-show-advanced">Show Advanced Details</button>
+    </div>
+  `;
 }
 
 function applyUnrealConnectionResult(result: { ok?: boolean; status?: string; endpoint?: string; message?: string; detail?: string; checkedAt?: string; response?: unknown } | undefined): void {
@@ -421,27 +476,12 @@ async function runFirstUnrealConnectionTest(): Promise<void> {
   }
 }
 
-async function checkUnreal(): Promise<void> {
-  try {
-    const response = await window.revoltRuntime.testDefaultUnrealConnection();
-    applyUnrealConnectionResult(response.result);
-    state.history = safeArray(response.history);
-  } catch (error) {
-    const message = errorMessage(error, "The desktop app could not reach Unreal.");
-    state.unrealStatus = { state: "offline", label: "Not Connected", detail: message };
-    state.connectionState.unreal = {
-      ...state.connectionState.unreal,
-      status: "error",
-      endpoint: `http://${state.settings.ueBridgeHost}:${state.settings.ueBridgePort}`,
-      lastCheckedAt: new Date().toISOString(),
-      lastError: message
-    };
-  }
-  renderAll();
-}
-
-requireElement("check-unreal").addEventListener("click", checkUnreal);
-requireElement("check-unreal-secondary").addEventListener("click", checkUnreal);
+requireElement("check-unreal").addEventListener("click", () => {
+  void runUnrealConnectionTest("dashboard");
+});
+requireElement("check-unreal-secondary").addEventListener("click", () => {
+  void runUnrealConnectionTest("unreal-connection-page");
+});
 for (const id of ["dashboard-connect-unreal", "beginner-connect-unreal", "open-connect-unreal"]) {
   requireElement(id).addEventListener("click", () => showPage("connect-unreal"));
 }
@@ -484,6 +524,21 @@ for (const button of Array.from(document.querySelectorAll<HTMLButtonElement>("[d
   button.addEventListener("click", () => handleBeginnerAction(button.dataset.beginnerAction ?? ""));
 }
 
+requireElement("beginner-create-plan").addEventListener("click", () => {
+  void createBeginnerIntentDryRunPlan();
+});
+
+requireElement("beginner-clear-plan").addEventListener("click", () => {
+  beginnerWorkflowPlan = null;
+  setInputValue("beginnerIntentInput", "");
+  requireElement("beginner-action-result").textContent = "Plan cleared. Type a beginner request like “make a map” to create a new dry-run plan.";
+  renderBeginnerWorkflowPlan();
+});
+
+requireElement("beginner-approve-execute").addEventListener("click", () => {
+  void executeApprovedBeginnerWorkflow();
+});
+
 function handleBeginnerAction(action: string): void {
   if (action === "make_playable") {
     showPage("playable-workflow");
@@ -525,6 +580,182 @@ function handleBeginnerAction(action: string): void {
   } else if (action === "open_tutorials") {
     requireElement("beginner-next-action").textContent = "Read the local docs listed below; no internet required.";
   }
+}
+
+async function createBeginnerIntentDryRunPlan(): Promise<void> {
+  const message = requireElement("beginner-action-result");
+  const intent = getInputValue("beginnerIntentInput").trim();
+  if (!intent) {
+    message.textContent = "Type what you want first. Example: make a map.";
+    notify("Type a beginner request first.", "warning");
+    return;
+  }
+
+  const planned = planBeginnerIntent(intent);
+  if (!planned) {
+    message.textContent = "I can safely plan “make a map” right now. Other typed workflows will be added later.";
+    notify("That beginner request is not supported yet.", "warning");
+    return;
+  }
+
+  beginnerWorkflowPlan = planned;
+  renderBeginnerWorkflowPlan();
+  message.textContent = "Dry-run plan created. Testing the plan in Unreal without changing your project...";
+
+  try {
+    const result = await window.revoltRuntime.runManualCommand({ command: planned.command, params: planned.dryRunParams });
+    state.history = safeArray(result.history);
+    planned.dryRunResult = result;
+    planned.status = result.ok ? "dry_run_ready" : "dry_run_failed";
+    message.textContent = result.ok
+      ? "Dry-run complete. Review the summary, then click Approve and Create Map if you want Unreal to apply it."
+      : `Dry-run failed before changes were made: ${result.summary}`;
+    renderHistory(state.history);
+  } catch (error) {
+    planned.status = "dry_run_failed";
+    const detail = errorMessage(error, "Dry-run failed before changes were made.");
+    message.textContent = detail;
+    notify(detail, "warning");
+  }
+
+  renderBeginnerWorkflowPlan();
+}
+
+function planBeginnerIntent(intent: string): BeginnerWorkflowPlan | null {
+  const normalized = intent.toLowerCase();
+  if (/(make|create|build|generate).*(map|level|arena|room)|map|level|arena/.test(normalized)) {
+    const dryRunParams = {
+      dry_run: true,
+      approved: false,
+      permission_level: "editor_mutation",
+      source_workflow: "beginner_make_map",
+      beginner_intent: intent
+    };
+    return {
+      id: `beginner-map-${Date.now()}`,
+      intent,
+      title: "Make a simple generated test map",
+      beginnerSummary: "This will add a small generated arena layout to the currently open Unreal level. It will not run until you approve it.",
+      command: "spawn_test_arena",
+      dryRunParams,
+      approvedParams: {
+        ...dryRunParams,
+        dry_run: false,
+        approved: true
+      },
+      plannedChanges: [
+        "Add a generated wave spawner actor to the current level.",
+        "Add a generated pickup actor to the current level.",
+        "Add a generated objective actor to the current level."
+      ],
+      riskLevel: "Low",
+      permissionLevel: "SafeEdit / editor_mutation",
+      status: "planned",
+      dryRunResult: null,
+      executionResult: null,
+      nextSteps: [
+        "Press Play in Unreal to inspect the generated layout.",
+        "Run Make This Level Playable if the level still needs a PlayerStart or lighting.",
+        "Use Undo in Unreal if you do not like the generated placement."
+      ]
+    };
+  }
+
+  if (normalized.includes("playable") || normalized.includes("player start") || normalized.includes("spawn point")) {
+    showPage("playable-workflow");
+    requireElement("beginner-action-result").textContent = "Make This Level Playable opened. Run the read-only check first; no fixes run automatically.";
+    return null;
+  }
+
+  if (normalized.includes("prototype") || normalized.includes("game")) {
+    showPage("prototype-wizard");
+    requireElement("beginner-action-result").textContent = "Prototype Wizard opened. Create a dry-run plan first; no assets will be changed.";
+    return null;
+  }
+
+  return null;
+}
+
+async function executeApprovedBeginnerWorkflow(): Promise<void> {
+  const message = requireElement("beginner-action-result");
+  if (!beginnerWorkflowPlan) {
+    message.textContent = "Create a dry-run plan first.";
+    notify("Create a dry-run plan first.", "warning");
+    return;
+  }
+  if (beginnerWorkflowPlan.status !== "dry_run_ready") {
+    message.textContent = "Review a successful dry-run before approving this workflow.";
+    notify("A successful dry-run is required before approval.", "warning");
+    return;
+  }
+
+  beginnerWorkflowPlan.status = "applying";
+  renderBeginnerWorkflowPlan();
+  message.textContent = "Applying approved map workflow in Unreal...";
+
+  try {
+    const result = await window.revoltRuntime.runManualCommand({ command: beginnerWorkflowPlan.command, params: beginnerWorkflowPlan.approvedParams });
+    state.history = safeArray(result.history);
+    beginnerWorkflowPlan.executionResult = result;
+    beginnerWorkflowPlan.status = result.ok ? "applied" : "failed";
+    message.textContent = result.ok
+      ? "Map workflow applied in Unreal. Review the generated actors in the current level."
+      : `Approved command reached Unreal but failed: ${result.summary}`;
+    renderHistory(state.history);
+    notify(message.textContent, result.ok ? "info" : "warning");
+  } catch (error) {
+    beginnerWorkflowPlan.status = "failed";
+    const detail = errorMessage(error, "Approved map workflow failed.");
+    message.textContent = detail;
+    notify(detail, "error");
+  }
+
+  renderBeginnerWorkflowPlan();
+}
+
+function renderBeginnerWorkflowPlan(): void {
+  const container = requireElement("beginner-workflow-plan");
+  const technical = requireElement("beginner-workflow-technical");
+  const approveButton = requireElement("beginner-approve-execute") as HTMLButtonElement;
+
+  if (!beginnerWorkflowPlan) {
+    container.hidden = true;
+    technical.hidden = true;
+    technical.textContent = "{}";
+    approveButton.disabled = true;
+    approveButton.textContent = "Approve and Create Map";
+    return;
+  }
+
+  const plan = beginnerWorkflowPlan;
+  container.hidden = false;
+  approveButton.disabled = plan.status !== "dry_run_ready";
+  approveButton.textContent = plan.status === "applied" ? "Map Created" : "Approve and Create Map";
+  const dryRunSummary = plan.dryRunResult ? `${plan.dryRunResult.ok ? "Dry-run succeeded" : "Dry-run failed"}: ${plan.dryRunResult.summary}` : "Dry-run has not completed yet.";
+  const executionSummary = plan.executionResult ? `${plan.executionResult.ok ? "Applied" : "Failed"}: ${plan.executionResult.summary}` : "Not applied yet.";
+  container.innerHTML = `
+    <h4>${escapeHtml(plan.title)}</h4>
+    <p>${escapeHtml(plan.beginnerSummary)}</p>
+    <p><strong>Status:</strong> ${escapeHtml(plan.status.replace(/_/g, " "))}</p>
+    <p><strong>Risk:</strong> ${escapeHtml(plan.riskLevel)} · <strong>Permission:</strong> ${escapeHtml(plan.permissionLevel)}</p>
+    ${renderPlanList("Planned changes", plan.plannedChanges)}
+    <p><strong>Dry-run result:</strong> ${escapeHtml(dryRunSummary)}</p>
+    <p><strong>Approved execution:</strong> ${escapeHtml(executionSummary)}</p>
+    ${renderPlanList("Next steps", plan.nextSteps)}
+  `;
+  technical.hidden = false;
+  technical.textContent = JSON.stringify(
+    {
+      intent: plan.intent,
+      command: plan.command,
+      dryRunParams: plan.dryRunParams,
+      approvedParams: plan.approvedParams,
+      dryRunResult: plan.dryRunResult?.response ?? null,
+      executionResult: plan.executionResult?.response ?? null
+    },
+    null,
+    2
+  );
 }
 
 requireElement("run-playable-check").addEventListener("click", async () => {
@@ -1008,30 +1239,6 @@ function installRendererErrorBoundary(): void {
     notify(message, "error");
     event.preventDefault();
   });
-}
-
-function installSafeEventDispatch(): void {
-  const originalAddEventListener = EventTarget.prototype.addEventListener;
-  EventTarget.prototype.addEventListener = function patchedAddEventListener(type, listener, options) {
-    if (typeof listener !== "function") {
-      return originalAddEventListener.call(this, type, listener, options);
-    }
-
-    const safeListener: EventListener = (event) => {
-      try {
-        const result = (listener as (...args: unknown[]) => unknown).call(this, event);
-        if (result && typeof (result as Promise<unknown>).catch === "function") {
-          void (result as Promise<unknown>).catch((error) => {
-            notify(errorMessage(error, "That button is unavailable right now. Missing local services are okay."), "warning");
-          });
-        }
-      } catch (error) {
-        notify(errorMessage(error, "That button is unavailable right now. Missing local services are okay."), "warning");
-      }
-    };
-
-    return originalAddEventListener.call(this, type, safeListener, options);
-  };
 }
 
 async function refreshIndexStats(): Promise<void> {

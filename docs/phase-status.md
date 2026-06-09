@@ -24,6 +24,8 @@ Post-Phase 17 reliability pass - Desktop runtime setup, connection, model, and U
 
 Post-Phase 17 usability enhancement - Beginner Unreal connection wizard: Complete.
 
+Post-Phase 17 usability enhancement - Beginner plan approval execution workflow: Complete.
+
 ## Completed Work
 
 - Created `unreal/HostProject/HostProject.uproject`.
@@ -727,6 +729,18 @@ Post-Phase 17 usability enhancement - Beginner Unreal connection wizard: Complet
 - Advanced host, port, endpoint, timeout, and reset controls are collapsed behind advanced settings.
 - The MCP server default bridge port and setup docs now match the Unreal plugin default port.
 
+## Beginner Plan Approval Execution Notes
+
+- Added a Beginner Dashboard typed request box for simple local intents such as `make a map`.
+- Typed input creates a beginner-readable dry-run plan only; it does not apply Unreal changes immediately.
+- The `make a map` intent maps to the existing local `spawn_test_arena` Unreal bridge command.
+- Dry-run execution uses `dry_run: true`, `approved: false`, and `permission_level: editor_mutation`.
+- Approved execution requires the user to click `Approve and Create Map`, then sends `dry_run: false` and `approved: true`.
+- The workflow shows planned changes, risk level, permission level, dry-run result, approved execution result, technical JSON, and next steps.
+- `spawn_test_arena` is now included in the desktop mutating-command safety defaults so dry-run remains default unless approval is explicit.
+- Generated pickup and objective actors spawned by the arena workflow are tagged with `Revolt.Generated`.
+- The workflow uses the existing desktop-to-Unreal localhost bridge at `http://127.0.0.1:8765`; no MCP, local model, cloud call, or telemetry is required.
+
 ## Acceptance Tests
 
 1. Beginner Dashboard appears in Beginner Mode.
@@ -781,6 +795,10 @@ Post-Phase 17 usability enhancement - Beginner Unreal connection wizard: Complet
 50. `Test Connection` reports a friendly offline message when Unreal is disconnected.
 51. Default Unreal endpoint is `http://127.0.0.1:8765`.
 52. Advanced connection settings are collapsed by default.
+53. Typing `make a map` on the Beginner Dashboard creates a dry-run plan without applying changes.
+54. `Approve and Create Map` is disabled until the dry-run succeeds.
+55. Clicking `Approve and Create Map` sends the approved Unreal bridge command.
+56. Generated arena actors are tagged with `Revolt.Generated`.
 
 ## Manual Test Procedure
 
@@ -823,6 +841,10 @@ Post-Phase 17 usability enhancement - Beginner Unreal connection wizard: Complet
 37. Open `Connect to Unreal` and confirm the wizard explains each setup step.
 38. With Unreal closed, click `Test Connection` and confirm the app reports a controlled unreachable/offline message.
 39. Confirm advanced connection settings show host `127.0.0.1`, port `8765`, and endpoint `http://127.0.0.1:8765`.
+40. Type `make a map` in the Beginner Dashboard request box and click `Create Dry-Run Plan`.
+41. Confirm the plan shows the generated arena actors and does not change the level during dry-run.
+42. Click `Approve and Create Map` and confirm Unreal receives the approved `spawn_test_arena` command.
+43. Confirm the result panel shows success or the specific Unreal bridge failure.
 
 ## Known Documentation Gap
 

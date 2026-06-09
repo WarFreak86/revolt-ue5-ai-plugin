@@ -22,6 +22,9 @@ const distDir = dirname(mainDir);
 const mutatingManualCommands = new Set([
   "create_biome_asset",
   "spawn_actor",
+  "spawn_test_arena",
+  "spawn_zombie_test_arena",
+  "create_arena_shooter_template",
   "create_zombie_shooter_template",
   "create_blueprint_class",
   "add_blueprint_variable",
@@ -42,7 +45,7 @@ async function createWindow(): Promise<void> {
     minHeight: 640,
     title: "Revolt Desktop Runtime",
     webPreferences: {
-      preload: join(distDir, "preload.js"),
+      preload: join(distDir, "preload.cjs"),
       contextIsolation: true,
       nodeIntegration: false
     }
